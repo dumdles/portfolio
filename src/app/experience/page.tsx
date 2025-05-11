@@ -118,7 +118,7 @@ export default function ExperiencePage() {
       {/* Max width container for the content itself */}
       <div className="max-w-5xl w-full py-12 px-4 sm:px-6 lg:px-8">
         <header className="mb-12 text-center md:text-left">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4">I wasn't born a natural leader...</h1>
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4">I was not born a natural leader...</h1>
           <p className="text-lg sm:text-xl text-neutral-600 dark:text-slate-400">
             But by stepping out of my comfort zone, I slowly
             <br className="hidden sm:inline" /> realised I enjoyed making meaningful connections.

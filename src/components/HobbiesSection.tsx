@@ -71,9 +71,9 @@ const HobbyCard: React.FC<HobbyCardProps> = ({ title, details, imageUrl, bgColor
 
       {/* Content (Title and Details) */}
       {/* Positioned relative and z-indexed to be above the image */}
-      <div className={`relative z-10 flex flex-col justify-end h-full transition-colors duration-300 ${isHovered ? "text-white" : textColor}`}>
-        <h3 className="text-xl sm:text-2xl font-bold">{title}</h3>
-        {details && <p className="text-sm sm:text-base font-medium opacity-90">{details}</p>}
+      <div className="relative z-10 flex flex-col justify-end h-full">
+        <h3 className={`text-xl sm:text-2xl font-bold mb-1`}>{title}</h3> {/* Inherits textColor */}
+        {details && <p className={`text-sm sm:text-base font-medium opacity-90`}>{details}</p>} {/* Inherits textColor */}
       </div>
     </div>
   );
@@ -84,7 +84,8 @@ export default function HobbiesSection() {
     <section id="hobbies" className="min-h-screen flex flex-col items-center justify-center bg-neutral-100 dark:bg-slate-800 text-neutral-800 dark:text-slate-200 p-4 font-sans">
       <div className="max-w-5xl w-full py-12 px-4 sm:px-6 lg:px-8">
         <header className="mb-12 text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4">I promise I'm not a boring person...</h1>
+          {/* Fixed unescaped apostrophe */}
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4">I promise I&apos;m not a boring person...</h1>
           <p className="text-lg sm:text-xl text-neutral-600 dark:text-slate-400">Here are some of my hobbies and interests!</p>
         </header>
 

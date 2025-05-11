@@ -113,11 +113,12 @@ const InfoCard: React.FC<InfoCardProps> = ({ title, year, details, bgColor, bord
 export default function ExperienceSection() {
   return (
     // Centering container for the whole section
-    <section id="experience" className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-slate-900 text-neutral-800 dark:text-slate-200 p-4 font-sans">
+    <section id="experience" className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-slate-900 text-neutral-800 dark:text-slate-200 p-4 font-sans">
       {/* Max width container for the content itself */}
       <div className="max-w-5xl w-full py-12 px-4 sm:px-6 lg:px-8">
         <header className="mb-12 text-center md:text-left">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4">I wasn't born a natural leader...</h1>
+          {/* Fixed unescaped apostrophe */}
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4">I wasn&apos;t born a natural leader...</h1>
           <p className="text-lg sm:text-xl text-neutral-600 dark:text-slate-400">
             But by stepping out of my comfort zone, I slowly
             <br className="hidden sm:inline" /> realised I enjoyed making meaningful connections.
