@@ -1,6 +1,5 @@
 "use client";
 
-import { CameraIcon, Linkedin } from "lucide-react";
 import React, { useState } from "react";
 
 interface LinkedInBadgeProps {
