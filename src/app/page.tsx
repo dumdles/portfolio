@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react"; // Import hooks for dynamic behavior
+import React from "react";
 
 // Import the section components
 import HeroSection from "../components/HeroSection";
@@ -12,27 +12,7 @@ import Navbar from "@/components/Navbar";
 import ProjectsSection from "@/components/ProjectsSection";
 
 export default function HomePage() {
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  // Effect to handle scroll event for dynamic nav bar
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        // Adjust threshold as needed
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    // Clean up the event listener
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []); // Empty dependency array means this effect runs once on mount
-
+  // Scroll state for the navigation bar is owned by Navbar itself.
   return (
     <div className="min-h-screen bg-neutral-100 dark:bg-slate-900 text-black flex flex-col">
       {/* Dynamic Navigation Bar */}
