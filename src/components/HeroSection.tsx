@@ -1,45 +1,60 @@
+"use client";
+
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 export default function HeroSection() {
-  const [scrollY, setScrollY] = useState(0);
+  const imageRef = useRef<HTMLDivElement | null>(null);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    if (reducedMotion) return;
 
-  // Calculate scale: between 1 and 1.15 as you scroll the first 400px
-  const scale = 1 + Math.min(scrollY / 400, 1) * 0.15;
-  // Optional: for parallax, you can also move the image up a bit
-  const translateY = Math.min(scrollY / 10, 40); // max 40px up
+    let frame: number | null = null;
+
+    const update = () => {
+      frame = null;
+      const node = imageRef.current;
+      if (!node) return;
+
+      const progress = Math.min(window.scrollY / 400, 1);
+      const scale = 1 + progress * 0.15;
+      const translateY = Math.min(window.scrollY / 10, 40);
+      node.style.transform = `scale(${scale.toFixed(3)}) translateY(${-translateY.toFixed(1)}px)`;
+    };
+
+    // Coalesce scroll events into one write per frame. The previous version
+    // called setState on every event, re-rendering the section continuously
+    // while scrolling.
+    const onScroll = () => {
+      if (frame === null) frame = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame !== null) cancelAnimationFrame(frame);
+    };
+  }, [reducedMotion]);
 
   return (
-    <main id="home" className="min-h-screen flex items-center justify-center p-4 pt-16 md:p-8 md:pt-20 lg:p-12 lg:pt-24">
-      {/* Added padding-top to account for fixed nav */}
+    // Top padding clears the navbar, which is taller below md where it wraps
+    // to two rows.
+    <main id="home" className="flex min-h-screen items-center justify-center p-4 pt-32 md:p-8 md:pt-24 lg:p-12">
       <div className="w-full flex flex-col md:flex-row items-center md:justify-between">
         {/* Text Content */}
         <div className="w-full md:w-1/2 mb-10 md:mb-0 md:pr-10">
-          <p className="text-lg sm:text-xl text-neutral-700 dark:text-neutral-200 mb-2">Hello, I am Dylan, a</p>
-          <h1 className="text-6xl sm:text-6xl md:text-7xl lg:text-8xl font-bold dark:text-blue-200">Creative Developer</h1>
+          <p className="text-body-lg text-ink-muted mb-2">Hello, I am Dylan, a</p>
+          <h1 className="text-display-lg font-display font-bold text-ink">Creative Developer</h1>
         </div>
 
         {/* Image Card with scroll-based zoom/parallax */}
-        <div className="w-full md:w-1/2 h-64 sm:h-80 md:h-[500px] lg:h-[600px] bg-neutral-200 rounded-3xl flex items-center justify-center relative overflow-hidden shadow-lg">
-          <Image
-            src="/images/dylan-hero.jpg"
-            alt="Cover image of Dylan"
-            layout="fill"
-            objectFit="cover"
-            className="absolute inset-0 transition-transform duration-300"
-            style={{
-              transform: `scale(${scale}) translateY(-${translateY}px)`,
-              transition: "transform 0.2s cubic-bezier(0.4,0,0.2,1)",
-            }}
-          />
+        <div className="w-full md:w-1/2 h-64 sm:h-80 md:h-[500px] lg:h-[600px] bg-surface-muted rounded-lg flex items-center justify-center relative overflow-hidden shadow-card border border-rule">
+          <div ref={imageRef} className="absolute inset-0 will-change-transform" style={{ transition: "transform 0.2s var(--ease-snap)" }}>
+            <Image src="/images/dylan-hero.jpg" alt="Portrait of Dylan" fill sizes="(max-width: 768px) 100vw, 50vw" priority className="object-cover" />
+          </div>
         </div>
       </div>
     </main>
