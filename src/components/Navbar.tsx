@@ -4,12 +4,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
+// Order and ids follow the section part numbers in docs/PLAN.md.
 const navLinks = [
-  { href: "#home", label: "Home" },
-  { href: "#journey", label: "Journey" },
-  { href: "#hobbies", label: "Hobbies" },
-  { href: "#experience", label: "Experience" },
-  { href: "#projects", label: "Projects" },
+  { href: "#home", label: "Index" },
+  { href: "#works", label: "Works" },
+  { href: "#timeline", label: "Timeline" },
+  { href: "#hobbies", label: "Off the clock" },
   { href: "#contact", label: "Contact" },
 ];
 

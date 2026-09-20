@@ -20,7 +20,11 @@ import { cn } from "@/lib/utils";
  * never put information here that appears nowhere else.
  */
 export interface AnnotationProps extends React.ComponentPropsWithoutRef<"div"> {
-  /** Which way the leader line runs from the label toward its subject. */
+  /**
+   * The direction the leader line points, which is where the subject is.
+   * `left` puts the line to the left of the label with the dot at its far
+   * end; `right` mirrors that.
+   */
   side?: "left" | "right";
   /** Length of the leader line. */
   lineLength?: "sm" | "md" | "lg";
@@ -33,17 +37,32 @@ const lineLengths = {
 } as const;
 
 export function Annotation({ side = "right", lineLength = "md", className, children, ...props }: AnnotationProps) {
+  const dot = <span className="size-1 shrink-0 rounded-full bg-brand" />;
+  const hairline = <span className="h-px flex-1 bg-rule-strong" />;
+
+  // Built explicitly per side rather than by mirroring with a transform,
+  // which made the dot land on the end away from the subject.
   const line = (
     <span aria-hidden className={cn("flex items-center", lineLengths[lineLength])}>
-      <span className="size-1 shrink-0 rounded-full bg-brand" />
-      <span className="h-px flex-1 bg-rule-strong" />
+      {side === "left" ? (
+        <>
+          {dot}
+          {hairline}
+        </>
+      ) : (
+        <>
+          {hairline}
+          {dot}
+        </>
+      )}
     </span>
   );
 
   return (
-    <div aria-hidden className={cn("pointer-events-none flex items-center gap-2 font-mono text-label uppercase text-ink-muted", side === "left" && "flex-row-reverse", className)} {...props}>
-      <span className={cn(side === "left" ? "scale-x-[-1]" : undefined, "flex")}>{line}</span>
+    <div aria-hidden className={cn("pointer-events-none flex items-center gap-2 font-mono text-label uppercase text-ink-muted", className)} {...props}>
+      {side === "left" && line}
       <span className="whitespace-nowrap">{children}</span>
+      {side === "right" && line}
     </div>
   );
 }

@@ -355,9 +355,20 @@ primitives are in place, with `/styleguide` rendering all of them in both themes
 and both accent presets. Documented in `DESIGN-SYSTEM.md`. Everything after this
 is composition.
 
-Two decisions from §9 are staged rather than settled: the accent ships as two
-complete presets, switchable live on the styleguide, and the type pairing ships
-as a wide grotesk with the serif alternative still open.
+**Phase 2 — Spine. Done.** Hero, Works index and Timeline rebuilt in the new
+language, with all copy and data moved out of components into `content/`.
+
+The accent is settled as signal blue, a saturated blue rather than the muted
+blueprint cyan; the presets and the styleguide switcher are gone. The type
+pairing stays a wide grotesk, with the display serif still an open option.
+
+Three things changed against the plan as written, all for the better:
+
+- Education, work and leadership are now one filterable timeline. Leadership
+  was a separate section; folding it in is what the merged spine was for.
+- The sticky project stack is gone, replaced by the bento index.
+- Project entries are labelled open slots rather than invented work. A
+  portfolio describing projects that do not exist is worse than a short one.
 
 **Phase 2 — Spine.** Rebuild Hero, Works index, and Timeline in the new language.
 Ship it. At this point the site is already better than what is live.

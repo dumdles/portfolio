@@ -1,30 +1,32 @@
-"use client";
-
-import React from "react";
-
-// Import the section components
-import HeroSection from "../components/HeroSection";
-import ExperienceSection from "../components/ExperienceSection";
-import HobbiesSection from "../components/HobbiesSection";
-import ContactSection from "../components/ContactSection";
-import JourneySection from "@/components/JourneySection";
+import { HeroSection } from "@/components/sections/hero-section";
+import { WorksSection } from "@/components/sections/works-section";
+import { TimelineSection } from "@/components/sections/timeline-section";
+import HobbiesSection from "@/components/sections/hobbies-section";
+import ContactSection from "@/components/sections/contact-section";
 import Navbar from "@/components/Navbar";
-import ProjectsSection from "@/components/ProjectsSection";
 
+/**
+ * The spine of the site, in the order a first-time visitor should meet it.
+ *
+ * Part numbers come from the information architecture in docs/PLAN.md. The
+ * gaps are intentional: 02 Craft, 04 Security and 05 Toolbelt are planned but
+ * not built yet, and renumbering around them now would only mean renumbering
+ * back later.
+ *
+ * This is a server component. Each section opts into the client itself, so
+ * only the interactive parts ship JavaScript.
+ */
 export default function HomePage() {
-  // Scroll state for the navigation bar is owned by Navbar itself.
   return (
     <div className="flex min-h-screen flex-col bg-paper text-ink">
-      {/* Dynamic Navigation Bar */}
-      {/* Added fixed positioning, background change on scroll */}
       <Navbar />
-      {/* Render the section components */}
-      <HeroSection />
-      <JourneySection /> {/* <ProjectsSection /> */}
-      <HobbiesSection /> {/* Render Hobbies Section */}
-      <ExperienceSection /> {/* Render Experience Section */}
-      <ProjectsSection />
-      <ContactSection />
+      <main>
+        <HeroSection />
+        <WorksSection />
+        <TimelineSection />
+        <HobbiesSection />
+        <ContactSection />
+      </main>
     </div>
   );
 }

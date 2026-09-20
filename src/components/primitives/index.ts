@@ -14,3 +14,4 @@ export { TechnicalLabel, type TechnicalLabelProps } from "./technical-label";
 export { Annotation, DimensionLine, type AnnotationProps, type DimensionLineProps } from "./annotation";
 export { TitleBlock, type TitleBlockField, type TitleBlockProps } from "./title-block";
 export { DraftingSheet, type DraftingSheetProps } from "./drafting-sheet";
+export { Chip, DisciplineMarker, type ChipProps, type DisciplineMarkerProps } from "./chip";

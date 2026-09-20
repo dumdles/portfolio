@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Annotation, BentoGrid, BentoItem, DimensionLine, DraftingSheet, SectionHeader, TechnicalLabel, TiltCard, TitleBlock } from "@/components/primitives";
-import { AccentSwitcher } from "@/components/styleguide/accent-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -80,7 +79,6 @@ export default function StyleguidePage() {
             </Link>
           </div>
           <div className="flex items-center gap-2">
-            <AccentSwitcher />
             <ThemeToggle />
           </div>
         </div>
@@ -92,7 +90,7 @@ export default function StyleguidePage() {
           part="00"
           eyebrow="Reference"
           title="The drawing set"
-          lead="Every token and primitive in the system, rendered together so they can be judged against each other rather than in isolation. Switch the theme and the accent from the header; everything on this page responds live."
+          lead="Every token and primitive in the system, rendered together so they can be judged against each other rather than in isolation. Switch the theme from the header; everything on this page responds live."
           className="mb-4"
         />
 

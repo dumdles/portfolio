@@ -59,6 +59,7 @@ src/
   app/
     globals.css            all design tokens, base styles, utilities
     layout.tsx             fonts, metadata, theme provider
+    page.tsx               the spine: which sections, in what order
     styleguide/page.tsx    the rendered reference
   components/
     primitives/            the design system
@@ -69,10 +70,16 @@ src/
       annotation.tsx       Annotation + DimensionLine
       title-block.tsx
       drafting-sheet.tsx
+      chip.tsx             Chip + DisciplineMarker
       index.ts             import from here
+    sections/              one file per numbered section
     ui/                    shadcn/ui, remapped onto system tokens
     theme-provider.tsx
     theme-toggle.tsx
+  content/                 all copy and data; no prose lives in a component
+    profile.ts             hero copy and the title block
+    projects.ts            the works index
+    timeline.ts            education, work and leadership
   hooks/
     use-reduced-motion.ts
 ```
@@ -82,6 +89,10 @@ Import primitives from the barrel, not from individual files:
 ```tsx
 import { TiltCard, BentoGrid, BentoItem, SectionHeader } from "@/components/primitives";
 ```
+
+Content stays out of components. Changing what the site says should mean
+editing `content/`, never JSX. Adding a project is one object in an array, and
+adding a timeline entry is the same.
 
 ---
 
@@ -140,21 +151,19 @@ so a grid of project tiles shows the mix across design, software and security
 without the reader parsing a single word. Use them as small markers, never as
 large fills.
 
-### Changing the accent
+### The accent is signal blue
 
-The entire site's accent is four variables. Two complete presets ship in
-`globals.css`:
+Settled. A saturated, slightly warm blue rather than the muted cyan of a
+photographic blueprint. It still reads as drafting ink, but carries enough
+chroma to work as a signal colour on a single small element.
 
-- **blueprint** (default) — cyan-blue ink. Reads engineering.
-- **signal** — saturated orange. Reads design studio.
+In the dark theme it is lifted and keeps its chroma, so it reads as emitted
+light rather than paint. A desaturated blue on a dark ground goes grey and
+stops signalling anything.
 
-Switch between them live on `/styleguide` using the control in the header,
-which sets `data-accent` on `<html>`. Compare both against real components in
-both themes before deciding.
-
-Once decided, move the chosen values into `:root` and `.dark` directly and
-delete the preset blocks and `AccentSwitcher`. The presets are a decision aid,
-not a visitor-facing feature.
+The two swappable presets and the styleguide's accent switcher are gone. To
+change the accent now, edit four variables in `:root` and four in `.dark`.
+Nothing else in the codebase names a blue.
 
 ---
 
@@ -315,6 +324,17 @@ The bordered field-and-value table from the corner of a drawing. Renders as a
 definition list, so it reads correctly to a screen reader. Use it for the hero
 status block and for case study metadata such as role, stack and dates.
 
+### `Chip` and `DisciplineMarker`
+
+`Chip` is a filter toggle, rendered as a real button with `aria-pressed` so
+keyboard and screen reader users get the state without extra work. It takes an
+optional `count`.
+
+`DisciplineMarker` is a coloured dot plus a label, marking a piece of work as
+design, build or break. It exists so a grid of project tiles shows the spread
+across the three disciplines at a glance, with no prose to read. Use it small;
+the discipline colours are markers, never fills.
+
 ### `DraftingSheet`
 
 The standard section wrapper. Supplies the drafting grid in its own masked
@@ -374,15 +394,26 @@ does not shift when it becomes live.
 
 ## 10. What is not built yet
 
-Phases 2 onward in `PLAN.md`. In rough dependency order:
+Phases 3 onward in `PLAN.md`. In rough dependency order:
 
-- Rebuild Hero, Works index and Timeline in the new language.
-- Project content model, MDX pipeline and case study routes.
-- Craft gallery, Security terminal pane, Toolbelt bento, Colophon.
-- A real contact backend. The form currently discards the message.
-- Command palette, page transitions, generated OG images.
+- **Project content.** Only one entry in `content/projects.ts` is real. The
+  rest are labelled open slots, deliberately not filled with invented work.
+- **Case study routes.** MDX pipeline, then `projects/[slug]`.
+- **02 Craft**, the visual work gallery. Needs six to nine strong images.
+- **04 Security**, the terminal pane. Needs a terminal primitive.
+- **05 Toolbelt**, a bento of tools grouped by discipline.
+- **Colophon** in the footer.
+- **A real contact backend.** The form currently discards the message.
+- **Command palette**, page transitions, generated OG images.
 
-Two primitives are deliberately missing until there is a real use for them: a
-terminal pane, which the Security section needs, and a filter chip row, which
-the Timeline needs. Build them when those sections land, then document them
-here.
+One primitive is deliberately missing until there is a use for it: the
+terminal pane the Security section needs. Build it when that section lands,
+then document it here.
+
+### Known rough edges
+
+- `next lint` is deprecated in Next 15.5 and removed in 16. The `lint` script
+  needs migrating to the ESLint CLI.
+- One critical advisory remains in `tar`, reached only through
+  `@tailwindcss/postcss`. It is a devDependency and does not ship, but it
+  should be cleared when Tailwind is next bumped.
