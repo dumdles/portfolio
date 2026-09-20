@@ -1,145 +1,77 @@
 "use client";
 
 import Image from "next/image";
-import React, { useRef, useState, MouseEvent } from "react";
-
-interface CardStyle {
-  transform: string;
-  transition: string;
-}
+import React from "react";
+import { BentoGrid, BentoItem, TiltCard, SectionHeader } from "@/components/primitives";
+import { cn } from "@/lib/utils";
+import type { BentoSize } from "@/components/primitives";
 
 interface HobbyCardProps {
   title: string;
   details?: string;
-  imageUrl: string; // URL for the image to reveal (can be local or external)
-  bgColor: string;
-  borderColor: string;
-  textColor: string;
-  className?: string; // Allow passing additional classes for grid span
+  imageUrl: string;
+  /** Tailwind classes for this tile's colour treatment. */
+  tone: string;
+  size?: BentoSize;
 }
 
-const HobbyCard: React.FC<HobbyCardProps> = ({ title, details, imageUrl, bgColor, borderColor, textColor, className = "" }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [style, setStyle] = useState<CardStyle>({
-    transform: "perspective(1000px) rotateX(0deg) rotateY(0deg)",
-    transition: "transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)",
-  });
-  const [isHovered, setIsHovered] = useState(false);
-
-  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const { left, top, width, height } = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - left;
-    const y = e.clientY - top;
-    const rotateX = (y / height - 0.5) * -15; // Slightly less rotation for hobbies
-    const rotateY = (x / width - 0.5) * 15;
-
-    setStyle((prevStyle) => ({
-      ...prevStyle,
-      transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`, // Slightly less scale
-      transition: "transform 0.1s ease-out",
-    }));
-    setIsHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setStyle({
-      transform: "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)",
-      transition: "transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)",
-    });
-    setIsHovered(false);
-  };
-
+const HobbyCard: React.FC<HobbyCardProps> = ({ title, details, imageUrl, tone, size = "sm" }) => {
   return (
-    <div
-      ref={cardRef}
-      className={`relative rounded-3xl p-4 sm:p-6 shadow-xl border-2 overflow-hidden cursor-pointer ${bgColor} ${borderColor} ${textColor} ${className}`}
-      style={style}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-    >
-      {/* Image that appears on hover */}
-      {/* Use the provided imageUrl prop */}
-      <Image
-        src={imageUrl} // Use the imageUrl prop
-        alt={`Image related to ${title}`}
-        layout="fill" // Cover the card area
-        objectFit="cover"
-        className={`absolute inset-0 transition-opacity duration-300 ${isHovered ? "opacity-80" : "opacity-0"}`}
-        // Removed onError as we expect local images or configured external domains
-      />
+    <BentoItem size={size}>
+      <TiltCard chrome={false} maxTilt={7} hoverScale={1.03} className={cn("group h-full rounded-lg border-2 p-4 shadow-card sm:p-6", tone)}>
+        {/* Revealed on hover. Hidden from assistive tech: it is atmosphere,
+            and the title already names the hobby. */}
+        {/* Revealed on hover, and shown permanently on touch devices, where
+            hover never fires and the tiles would otherwise be flat colour. */}
+        <Image
+          src={imageUrl}
+          alt=""
+          aria-hidden
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-80 [@media(hover:none)]:opacity-70"
+        />
 
-      {/* Content (Title and Details) */}
-      {/* Positioned relative and z-indexed to be above the image */}
-      <div className="relative z-10 flex flex-col justify-end h-full">
-        <h3 className={`text-xl sm:text-2xl font-bold mb-1`}>{title}</h3> {/* Inherits textColor */}
-        {details && <p className={`text-sm sm:text-base font-medium opacity-90`}>{details}</p>} {/* Inherits textColor */}
-      </div>
-    </div>
+        <div className="relative z-10 flex h-full flex-col justify-end">
+          <h3 className="font-display text-heading-sm font-bold sm:text-heading">{title}</h3>
+          {details && <p className="text-body-sm font-medium opacity-90">{details}</p>}
+        </div>
+      </TiltCard>
+    </BentoItem>
   );
 };
 
 export default function HobbiesSection() {
   return (
-    <section id="hobbies" className="min-h-screen flex flex-col items-center justify-center bg-neutral-100 dark:bg-slate-800 text-neutral-800 dark:text-slate-200 p-4 font-sans">
-      <div className="max-w-5xl w-full py-12 px-4 sm:px-6 lg:px-8">
-        <header className="mb-12 text-center">
-          {/* Fixed unescaped apostrophe */}
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4">I promise I&apos;m not a boring person...</h1>
-          <p className="text-lg sm:text-xl text-neutral-600 dark:text-slate-400">Here are some of my hobbies and interests!</p>
-        </header>
+    <section id="hobbies" className="flex min-h-screen flex-col items-center justify-center bg-paper p-4 text-ink">
+      <div className="w-full max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+        <SectionHeader
+          part="06"
+          eyebrow="Off the clock"
+          align="center"
+          className="mb-12"
+          title={<>I promise I&apos;m not a boring person...</>}
+          lead="Here are some of my hobbies and interests."
+        />
 
-        {/* Adjusted grid for Bento Box layout */}
-        {/* On medium screens and up, use a 3-column grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 auto-rows-[180px]">
-          {" "}
-          {/* Added auto-rows for consistent height */}
-          <HobbyCard
-            title="Design"
-            imageUrl="/images/design-hobby.jpg" // Example local image path
-            bgColor="bg-green-300 dark:bg-green-600"
-            borderColor="border-green-500 dark:border-green-400"
-            textColor="text-green-900 dark:text-green-100"
-          />
-          <HobbyCard
-            title="Media"
-            imageUrl="/images/media-hobby.jpg" // Example local image path
-            bgColor="bg-blue-300 dark:bg-blue-600"
-            borderColor="border-blue-500 dark:border-blue-400"
-            textColor="text-blue-900 dark:text-blue-100"
-          />
-          <HobbyCard
-            title="Cycling"
-            imageUrl="/images/cycling-hobby.jpg" // Example local image path
-            bgColor="bg-red-300 dark:bg-red-600"
-            borderColor="border-red-500 dark:border-red-400"
-            textColor="text-red-900 dark:text-red-100"
-          />
-          <HobbyCard
-            title="Guitar"
-            imageUrl="/images/guitar-hobby.jpg" // Example local image path
-            bgColor="bg-yellow-300 dark:bg-yellow-600"
-            borderColor="border-yellow-500 dark:border-yellow-400"
-            textColor="text-yellow-900 dark:text-yellow-100"
-          />
-          {/* These cards span 2 columns on medium and large screens */}
+        <BentoGrid columns={3}>
+          <HobbyCard title="Design" imageUrl="/images/design-hobby.jpg" tone="bg-green-300 border-green-500 text-green-950 dark:bg-green-700 dark:border-green-500 dark:text-green-50" />
+          <HobbyCard title="Media" imageUrl="/images/media-hobby.jpg" tone="bg-blue-300 border-blue-500 text-blue-950 dark:bg-blue-700 dark:border-blue-500 dark:text-blue-50" />
+          <HobbyCard title="Cycling" imageUrl="/images/cycling-hobby.jpg" tone="bg-red-300 border-red-500 text-red-950 dark:bg-red-700 dark:border-red-500 dark:text-red-50" />
+          <HobbyCard title="Guitar" imageUrl="/images/guitar-hobby.jpg" tone="bg-yellow-300 border-yellow-500 text-yellow-950 dark:bg-yellow-700 dark:border-yellow-500 dark:text-yellow-50" />
           <HobbyCard
             title="Making new connections"
-            imageUrl="/images/connections-hobby.jpg" // Example local image path
-            bgColor="bg-purple-300 dark:bg-purple-600"
-            borderColor="border-purple-500 dark:border-purple-400"
-            textColor="text-purple-900 dark:text-purple-100"
-            className="sm:col-span-2" // Span 2 columns on small and larger screens
+            imageUrl="/images/connections-hobby.jpg"
+            size="md"
+            tone="bg-purple-300 border-purple-500 text-purple-950 dark:bg-purple-700 dark:border-purple-500 dark:text-purple-50"
           />
           <HobbyCard
             title="Serving the community"
-            imageUrl="/images/community-hobby.jpg" // Example local image path
-            bgColor="bg-cyan-300 dark:bg-cyan-600"
-            borderColor="border-cyan-500 dark:border-cyan-400"
-            textColor="text-cyan-900 dark:text-cyan-100"
-            className="sm:col-span-2" // Span 2 columns on small and larger screens
+            imageUrl="/images/community-hobby.jpg"
+            size="md"
+            tone="bg-cyan-300 border-cyan-500 text-cyan-950 dark:bg-cyan-700 dark:border-cyan-500 dark:text-cyan-50"
           />
-        </div>
+        </BentoGrid>
       </div>
     </section>
   );

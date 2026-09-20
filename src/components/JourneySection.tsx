@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Separator } from "./ui/separator";
+import { SectionHeader, TechnicalLabel } from "@/components/primitives";
 
 // Card component for a single journey item
 interface JourneyCardProps {
@@ -12,31 +13,28 @@ interface JourneyCardProps {
 
 const JourneyCard: React.FC<JourneyCardProps> = ({ title, subtitle, period }) => {
   return (
-    <div
-      className="flex justify-between items-start py-6 border-gray-300 dark:border-gray-700 px-4 select-none
-                    transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer rounded-lg"
-    >
-      <div className="flex-1 pr-4">
-        <h3 className="text-lg font-semibold text-neutral-800 dark:text-gray-100">{title}</h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400">{subtitle}</p>
+    <div className="flex items-start justify-between gap-4 rounded-md px-4 py-6 transition-colors duration-200 hover:bg-surface-muted">
+      <div className="flex-1">
+        <h3 className="font-display text-heading-sm font-semibold text-ink">{title}</h3>
+        {subtitle && <p className="text-body-sm text-ink-muted">{subtitle}</p>}
       </div>
-      <div className="flex-shrink-0 text-sm font-mono text-right text-gray-500 dark:text-gray-500">{period}</div>
+      <div className="shrink-0 text-right font-mono text-caption text-ink-faint">{period}</div>
     </div>
   );
 };
 
 export default function JourneySection() {
   return (
-    <section id="journey" className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-slate-900 p-4 font-sans">
-      <div className="max-w-3xl w-full py-12 px-4 sm:px-6 lg:px-8">
-        <header className="mb-12 text-center">
-          <h2 className="text-4xl sm:text-5xl font-bold text-neutral-800 dark:text-neutral-50 mb-4">My Journey</h2>
-        </header>
+    <section id="journey" className="flex min-h-screen flex-col items-center justify-center bg-paper p-4 text-ink">
+      <div className="w-full max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+        <SectionHeader part="03" eyebrow="Timeline" align="center" className="mb-12" title="My Journey" />
 
         <div className="space-y-8">
           {/* Education Timeline */}
           <div>
-            <div className="inline-block px-4 py-1 mb-6 text-sm font-medium rounded-full bg-gray-200 dark:bg-gray-700 text-neutral-800 dark:text-gray-200">Education</div>
+            <TechnicalLabel rule tone="brand" className="mb-6">
+              Education
+            </TechnicalLabel>
             <div className="space-y-2">
               <JourneyCard title="Horizon Primary School" subtitle="Primary School Leaving Examination (PSLE)" period="2012-2017" />
               <Separator />
@@ -48,7 +46,9 @@ export default function JourneySection() {
 
           {/* Experience Timeline */}
           <div>
-            <div className="inline-block px-4 py-1 mb-6 text-sm font-medium rounded-full bg-gray-200 dark:bg-gray-700 text-neutral-800 dark:text-gray-200">Experience</div>
+            <TechnicalLabel rule tone="brand" className="mb-6">
+              Experience
+            </TechnicalLabel>
             <div className="space-y-2">
               <JourneyCard title="Part-time Server at McDonald's" subtitle="First part-timer experience during my school holidays" period="Oct 2019" />
               <Separator />

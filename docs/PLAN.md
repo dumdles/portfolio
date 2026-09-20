@@ -343,15 +343,21 @@ with `next/og`.
 
 Sequenced so the site is deployable at the end of every phase.
 
-**Phase 0 — Foundation.** Fix the defects table in §1. Wire `next-themes` and
-verify dark mode actually renders. Fix the image extensions. Delete the duplicate
-experience route. Correct the font tokens and metadata. No visual redesign yet;
-this is making the existing site honest.
+**Phase 0 — Foundation. Done.** Fixed every defect in the table above. Wired
+`next-themes`, so dark mode renders for the first time. Normalised the image
+extensions, deleted the duplicate experience route, corrected the font tokens
+and metadata, replaced the legacy `next/image` props, and moved both scroll
+handlers onto `requestAnimationFrame` with the navbar's active-section tracking
+on an `IntersectionObserver`.
 
-**Phase 1 — Design system.** Decide the palette and type pairing. Write the
-tokens. Build `TiltCard`, `BentoGrid`, `Annotation`, `TitleBlock`, `SectionHeader`
-and the grid background. Assemble a `/styleguide` route showing every primitive in
-both themes. Everything after this is composition.
+**Phase 1 — Design system. Done.** Tokens, type scale, spacing and the
+primitives are in place, with `/styleguide` rendering all of them in both themes
+and both accent presets. Documented in `DESIGN-SYSTEM.md`. Everything after this
+is composition.
+
+Two decisions from §9 are staged rather than settled: the accent ships as two
+complete presets, switchable live on the styleguide, and the type pairing ships
+as a wide grotesk with the serif alternative still open.
 
 **Phase 2 — Spine.** Rebuild Hero, Works index, and Timeline in the new language.
 Ship it. At this point the site is already better than what is live.

@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import LinkedInBadge from "./LinkedInBadge"; // Import the new LinkedInBadge component
+import LinkedInBadge from "./LinkedInBadge";
+import { SectionHeader } from "@/components/primitives";
 
 export default function ContactSection() {
   const [formData, setFormData] = useState({
@@ -57,12 +58,9 @@ export default function ContactSection() {
   };
 
   return (
-    <section id="contact" className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white p-4 font-sans">
-      <div className="max-w-2xl w-full bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 sm:p-10 md:p-12 text-neutral-800 dark:text-slate-200">
-        <header className="mb-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-1">Get in touch!</h2>
-          <p className="text-md text-neutral-600 dark:text-slate-400">Have a project in mind or just want to say hello?</p>
-        </header>
+    <section id="contact" className="drafting-grid flex min-h-screen flex-col items-center justify-center bg-paper p-4 text-ink">
+      <div className="w-full max-w-2xl rounded-lg border border-rule bg-surface p-8 shadow-pane sm:p-10 md:p-12">
+        <SectionHeader part="07" eyebrow="Contact" align="center" className="mb-8" title="Get in touch!" lead="Have a project in mind or just want to say hello?" />
 
         <form onSubmit={handleSubmit} className="space-y-6 mb-8">
           {/* Added mb-8 for spacing */}
@@ -110,13 +108,15 @@ export default function ContactSection() {
           >
             {isSubmitting ? "Sending..." : "Send Message"}
           </Button>
-          {submitStatus === "success" && <p className="text-center text-green-600 dark:text-green-400 mt-4">Message sent successfully!</p>}
-          {submitStatus === "error" && <p className="text-center text-red-600 dark:text-red-400 mt-4">Failed to send message. Please try again later.</p>}
+          <p aria-live="polite" className="text-center text-body-sm">
+            {submitStatus === "success" && <span className="text-positive">Message sent successfully.</span>}
+            {submitStatus === "error" && <span className="text-critical">Failed to send message. Please try again later.</span>}
+          </p>
         </form>
 
         {/* Alternative Contact Section */}
-        <div className="text-center mt-8 border-t border-neutral-200 dark:border-gray-700 pt-8">
-          <p className="text-md text-neutral-600 dark:text-slate-400 mb-2">or, connect with me on LinkedIn:</p>
+        <div className="mt-8 border-t border-rule pt-8 text-center">
+          <p className="mb-2 text-body-sm text-ink-muted">or, connect with me on LinkedIn:</p>
           <LinkedInBadge username="dumdles" /> {/* Use the new component */}
         </div>
       </div>

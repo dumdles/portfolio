@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import ProjectCard from "./ProjectCard"; // Import the new ProjectCard component
+import ProjectCard from "./ProjectCard";
+import { SectionHeader } from "@/components/primitives";
 
 // Placeholder data for the projects section
 const projectsData = [
@@ -29,12 +30,9 @@ const projectsData = [
 
 export default function ProjectsSection() {
   return (
-    <section id="projects" className="bg-gray-100 dark:bg-slate-900 min-h-screen pt-24 pb-12 font-sans relative">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header className="mb-12 text-center">
-          <h2 className="text-4xl sm:text-5xl font-bold text-neutral-800 dark:text-neutral-50 mb-4">My Projects</h2>
-          <p className="text-lg text-neutral-600 dark:text-slate-400">A showcase of my recent work and creations.</p>
-        </header>
+    <section id="projects" className="relative min-h-screen bg-paper pb-12 pt-24 text-ink">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <SectionHeader part="02" eyebrow="Selected works" align="center" className="mb-12" title="My Projects" lead="A showcase of my recent work and creations." />
 
         {/* The container for the stacking cards */}
         <div className="relative space-y-5">
