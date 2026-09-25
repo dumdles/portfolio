@@ -73,6 +73,13 @@ export default function RootLayout({
     // suppressHydrationWarning is required: next-themes sets the class and
     // color-scheme on this element before React hydrates.
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Marks the document as scripted before first paint. Scroll reveals
+            only hide content when this attribute is present, so a visitor
+            without JavaScript gets a complete, static page rather than a
+            blank one. */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.setAttribute('data-js','')" }} />
+      </head>
       <body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}

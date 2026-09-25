@@ -3,6 +3,8 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { TechnicalLabel } from "./technical-label";
+import { DecodeText } from "./decode-text";
+import { useInView } from "@/hooks/use-in-view";
 
 /**
  * The standard heading for a top-level section.
@@ -28,23 +30,51 @@ export interface SectionHeaderProps extends Omit<React.ComponentPropsWithoutRef<
 }
 
 export function SectionHeader({ part, eyebrow, title, lead, as: Heading = "h2", align = "left", className, ...props }: SectionHeaderProps) {
+  // The header is its own trigger: its label decodes, its rule draws and
+  // its title and lead rise, all the first time it comes into view.
+  const [ref, inView] = useInView<HTMLElement>();
+
   return (
-    <header className={cn("flex flex-col gap-4", align === "center" && "items-center text-center", className)} {...props}>
+    <header
+      ref={ref}
+      data-inview={inView ? "" : undefined}
+      className={cn("flex flex-col gap-4", align === "center" && "items-center text-center", className)}
+      {...props}
+    >
       {(part || eyebrow) && (
-        <div className={cn("flex w-full items-center gap-3", align === "center" && "justify-center")}>
+        <div data-reveal="fade" className={cn("flex w-full items-center gap-3", align === "center" && "justify-center")}>
           {part && (
             <TechnicalLabel aria-hidden tone="brand" className="tabular-nums">
-              {part}
+              <DecodeText text={part} start={inView} duration={320} />
             </TechnicalLabel>
           )}
-          {eyebrow && <TechnicalLabel>{eyebrow}</TechnicalLabel>}
-          <span aria-hidden className={cn("h-px flex-1 bg-rule", align === "center" && "max-w-24")} />
+          {eyebrow && (
+            <TechnicalLabel>
+              <DecodeText text={eyebrow} start={inView} delay={60} />
+            </TechnicalLabel>
+          )}
+          <span
+            aria-hidden
+            data-draw
+            style={{ "--delay": "120ms" } as React.CSSProperties}
+            className={cn("h-px flex-1 bg-rule", align === "center" && "max-w-24")}
+          />
         </div>
       )}
 
-      <Heading className={cn("font-display font-semibold text-balance text-ink", Heading === "h1" ? "text-display-lg" : "text-display-sm")}>{title}</Heading>
+      <Heading
+        data-reveal
+        style={{ "--i": 1 } as React.CSSProperties}
+        className={cn("font-display font-semibold text-balance text-ink", Heading === "h1" ? "text-display-lg" : "text-display-sm")}
+      >
+        {title}
+      </Heading>
 
-      {lead && <p className={cn("max-w-prose text-body-lg text-ink-muted text-pretty", align === "center" && "mx-auto")}>{lead}</p>}
+      {lead && (
+        <p data-reveal style={{ "--i": 2 } as React.CSSProperties} className={cn("max-w-prose text-body-lg text-ink-muted text-pretty", align === "center" && "mx-auto")}>
+          {lead}
+        </p>
+      )}
     </header>
   );
 }

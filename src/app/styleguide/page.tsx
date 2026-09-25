@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Annotation, BentoGrid, BentoItem, DimensionLine, DraftingSheet, SectionHeader, TechnicalLabel, TiltCard, TitleBlock } from "@/components/primitives";
+import { Annotation, BentoGrid, BentoItem, DecodeText, DimensionLine, DraftingSheet, PixelGlyph, PixelText, Reveal, SectionHeader, TechnicalLabel, TiltCard, TitleBlock, stagger } from "@/components/primitives";
+import { glyphs, type GlyphName } from "@/lib/pixel/glyphs";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -63,6 +64,31 @@ function TypeRow({ token, sample, note }: { token: string; sample: string; note:
     </div>
   );
 }
+
+
+/** How each glyph behaves on hover, as the site uses it. */
+const glyphMotion: Record<GlyphName, "swap" | "loop" | undefined> = {
+  design: "loop",
+  build: "loop",
+  break: "swap",
+  monogram: "loop",
+  nib: "loop",
+  camera: "swap",
+  bike: "loop",
+  guitar: "loop",
+  network: "loop",
+  heart: "loop",
+  arrowDown: undefined,
+};
+
+const motionTokens = [
+  { token: "--dur-snap", value: "140ms", use: "Colour and opacity responses to hover" },
+  { token: "--dur-quick", value: "260ms", use: "Pixel pops, crop marks, small snaps" },
+  { token: "--dur-base", value: "440ms", use: "Text and cards rising into place" },
+  { token: "--dur-slow", value: "780ms", use: "One-time entrances only: rules drawing, the scan" },
+  { token: "--ease-out-expo", value: "cubic-bezier(.16, 1, .3, 1)", use: "Anything drawn: lands hard, settles" },
+  { token: "steps(n)", value: "3 or 6 steps", use: "Anything pixel: snaps like a sprite frame" },
+];
 
 /* -------------------------------------------------------------------------- */
 
@@ -367,6 +393,89 @@ export default function StyleguidePage() {
               <code className="font-mono">.drafting-grid</code>
               <code className="font-mono">.drafting-grid-fine</code>
               <code className="font-mono">+ mask-image</code>
+            </div>
+          </Block>
+
+          <Block
+            part="10"
+            name="Motion"
+            description="Short, once, and stepped where it is pixel. Entrances play the first time something is seen and never again; the only loops on the site run while a pointer rests on them. prefers-reduced-motion shows every final state immediately."
+          >
+            <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+              <div className="overflow-hidden rounded-md border border-rule bg-surface">
+                {motionTokens.map((row) => (
+                  <div key={row.token} className="grid gap-1 border-b border-rule px-4 py-3 last:border-b-0 sm:grid-cols-[9rem_11rem_1fr] sm:gap-4">
+                    <code className="font-mono text-caption text-ink">{row.token}</code>
+                    <code className="font-mono text-caption text-brand">{row.value}</code>
+                    <span className="text-caption text-ink-muted">{row.use}</span>
+                  </div>
+                ))}
+              </div>
+
+              <Reveal className="flex flex-col gap-5 rounded-md border border-rule bg-surface p-6">
+                <div data-reveal>
+                  <TechnicalLabel className="mb-2">DecodeText</TechnicalLabel>
+                  <p className="font-mono text-heading-sm uppercase text-ink">
+                    <DecodeText text="Locked on target" duration={700} />
+                  </p>
+                </div>
+                <div data-reveal style={stagger(1)}>
+                  <TechnicalLabel className="mb-3">data-draw</TechnicalLabel>
+                  <span aria-hidden data-draw className="block h-px w-full bg-brand" style={{ "--delay": "200ms" } as React.CSSProperties} />
+                </div>
+                <div data-reveal style={stagger(2)}>
+                  <TechnicalLabel className="mb-2">data-reveal, staggered</TechnicalLabel>
+                  <p className="text-body-sm text-ink-muted">Each child rises in turn, one --stagger apart. Scroll away and back: nothing replays.</p>
+                </div>
+              </Reveal>
+            </div>
+          </Block>
+
+          <Block
+            part="11"
+            name="Pixel glyphs"
+            description="Drawn by hand on a grid, rendered as crisp squares at whole-pixel scales only. Two tones: ink, and one accent. Frame 0 rests; frame 1 is what the glyph does when hovered. Point at any card."
+          >
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              {(Object.keys(glyphs) as GlyphName[]).map((name) => {
+                const glyph = glyphs[name];
+                return (
+                  <div key={name} className="glyph-trigger group flex flex-col gap-4 rounded-md border border-rule bg-surface p-4 transition-colors hover:border-rule-strong">
+                    <div className="flex h-20 items-center justify-center">
+                      <PixelGlyph name={name} px={5} hover={glyphMotion[name]} assemble="view" className="text-ink" />
+                    </div>
+                    {glyph.frames.length > 1 && (
+                      <div className="flex items-center justify-center gap-3 text-ink-muted">
+                        <PixelGlyph name={name} px={2} frame={0} />
+                        <span aria-hidden className="font-mono text-label text-ink-faint">/</span>
+                        <PixelGlyph name={name} px={2} frame={1} />
+                      </div>
+                    )}
+                    <div className="flex items-baseline justify-between gap-2 border-t border-rule pt-3">
+                      <code className="font-mono text-caption text-ink">{name}</code>
+                      <span className="font-mono text-label uppercase text-ink-faint">
+                        {glyph.w}×{glyph.h} · {glyphMotion[name] ?? "static"}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Block>
+
+          <Block
+            part="12"
+            name="Pixel type"
+            description="A 5×7 face drawn for the site: A to Z, 0 to 9 and the punctuation it uses. It sets the footer wordmark, and nothing longer than a word or two should ever be set in it."
+          >
+            <div className="flex flex-col gap-6 overflow-x-auto rounded-md border border-rule bg-surface p-6 text-ink">
+              <PixelText text="ABCDEFGHIJKLM" px={4} />
+              <PixelText text="NOPQRSTUVWXYZ" px={4} />
+              <PixelText text="0123456789 .,-_/:!?'+<>" px={4} />
+            </div>
+            <div className="mt-6 rounded-md border border-rule bg-surface p-6 text-ink">
+              <TechnicalLabel className="mb-4">fluid · drop · interactive</TechnicalLabel>
+              <PixelText text="Point here" fluid drop interactive />
             </div>
           </Block>
         </div>

@@ -343,8 +343,376 @@
 
 /* ===========================================================================
    MOTION
-   Every animated surface in the system checks this. Honour the OS setting
-   rather than asking the visitor to opt out on the page.
+
+   The rules, in order of importance:
+
+   1. Motion is short. Nothing that responds to the visitor takes longer than
+      --dur-base. Only one-time entrances are allowed --dur-slow.
+   2. Motion happens once. Entrances play when a thing first comes into view
+      and never again. The only loops on the site run while a pointer is
+      resting on the thing that loops.
+   3. Pixel things move in steps; drawn things move in curves. Pixel glyphs
+      and pixel type use steps() timing so they snap like sprites. Lines,
+      cards and type use --ease-out-expo so they land hard and settle.
+   4. The OS setting wins. prefers-reduced-motion shows the final state of
+      everything immediately, with no exceptions.
+   ========================================================================= */
+:root {
+  --dur-snap: 140ms;
+  --dur-quick: 260ms;
+  --dur-base: 440ms;
+  --dur-slow: 780ms;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-crisp: cubic-bezier(0.65, 0, 0.35, 1);
+  --stagger: 70ms;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* A line of display type slides up out of a mask, the way a sheet is fed
+   through a plotter. Pair with an overflow-clipped parent. */
+@keyframes mask-rise {
+  from {
+    transform: translate3d(0, 105%, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes draw-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes draw-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* A pixel lands. Three steps, so it reads as a sprite frame change rather
+   than as a smooth scale. */
+@keyframes pixel-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.25);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* A pixel falls three grid cells into place, one cell per step. */
+@keyframes pixel-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes scan-reveal {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes scan-line {
+  0% {
+    top: 0%;
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes snap-in {
+  from {
+    opacity: 0;
+    transform: translate(var(--snap-x, 0), var(--snap-y, 0));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}
+
+@keyframes frame-a {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes frame-b {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* --- Scroll-triggered reveals --------------------------------------------
+
+   An inline script in layout.tsx sets data-js on <html> before first paint.
+   Everything that waits for the viewport is only hidden when that attribute
+   exists, so with JavaScript off, or before it loads, the page is simply
+   static and fully legible. Nothing is ever hidden by a stylesheet alone. */
+html[data-js] [data-reveal] {
+  opacity: 0;
+}
+
+html[data-js] [data-inview][data-reveal],
+html[data-js] [data-inview] [data-reveal] {
+  animation: rise var(--dur-base) var(--ease-out-expo) both;
+  animation-delay: calc(var(--i, 0) * var(--stagger) + var(--delay, 0ms));
+}
+
+html[data-js] [data-inview][data-reveal="fade"],
+html[data-js] [data-inview] [data-reveal="fade"] {
+  animation-name: fade;
+}
+
+/* Rules and spines that draw themselves in. */
+html[data-js] [data-draw] {
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+html[data-js] [data-inview][data-draw],
+html[data-js] [data-inview] [data-draw] {
+  animation: draw-x var(--dur-slow) var(--ease-out-expo) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+/* --- Load choreography ---------------------------------------------------
+
+   The hero plays on first paint without waiting for hydration, so its
+   timing is pure CSS. Each element sets its own --delay. */
+.intro-rise {
+  animation: rise var(--dur-base) var(--ease-out-expo) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.intro-mask-rise {
+  animation: mask-rise var(--dur-slow) var(--ease-out-expo) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.intro-fade {
+  animation: fade var(--dur-base) var(--ease-out-expo) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.intro-draw-x {
+  transform-origin: left center;
+  animation: draw-x var(--dur-slow) var(--ease-out-expo) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.intro-draw-y {
+  transform-origin: center top;
+  animation: draw-y var(--dur-slow) var(--ease-out-expo) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.intro-scan {
+  animation: scan-reveal var(--dur-slow) var(--ease-in-out-crisp) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.intro-scanline {
+  animation: scan-line var(--dur-slow) var(--ease-in-out-crisp) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.intro-snap {
+  animation: snap-in var(--dur-quick) var(--ease-out-expo) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+/* --- Pixel glyphs ---------------------------------------------------------- */
+.pixel-glyph {
+  shape-rendering: crispEdges;
+  overflow: visible;
+}
+
+.pixel-glyph rect {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Frames beyond the first are hidden until something asks for them. */
+.pixel-glyph [data-frame]:not([data-frame="0"]) {
+  display: none;
+}
+
+/* Assemble: pixels land in a diagonal sweep, like a print head passing. */
+html[data-js] .pixel-glyph[data-assemble] rect {
+  opacity: 0;
+}
+
+html[data-js] .pixel-glyph[data-assemble][data-inview] rect,
+.pixel-glyph[data-assemble="intro"] rect {
+  animation: pixel-pop var(--dur-quick) steps(3, end) both;
+  animation-delay: calc(var(--pd, 0ms) + var(--glyph-delay, 0ms));
+}
+
+/* Hover behaviour is declared on the glyph, triggered by whichever ancestor
+   carries .glyph-trigger, so a whole card or word can wake its glyph. */
+.glyph-trigger:is(:hover, :focus-visible, :focus-within) .pixel-glyph[data-hover="swap"] [data-frame="0"] {
+  display: none;
+}
+
+.glyph-trigger:is(:hover, :focus-visible, :focus-within) .pixel-glyph[data-hover="swap"] [data-frame="1"] {
+  display: inline;
+}
+
+.glyph-trigger:is(:hover, :focus-visible, :focus-within) .pixel-glyph[data-hover="loop"] [data-frame="0"] {
+  animation: frame-a 380ms steps(1, end) infinite;
+}
+
+.glyph-trigger:is(:hover, :focus-visible, :focus-within) .pixel-glyph[data-hover="loop"] [data-frame="1"] {
+  display: inline;
+  animation: frame-b 380ms steps(1, end) infinite;
+}
+
+/* --- Pixel type ------------------------------------------------------------ */
+.pixel-text {
+  shape-rendering: crispEdges;
+  overflow: visible;
+}
+
+.pixel-text rect {
+  transform-box: fill-box;
+  transition: fill var(--dur-snap) linear;
+}
+
+.pixel-text rect[data-hot] {
+  fill: var(--brand);
+}
+
+html[data-js] .pixel-text[data-drop] rect {
+  opacity: 0;
+}
+
+html[data-js] .pixel-text[data-drop][data-inview] rect {
+  animation: pixel-drop var(--dur-base) steps(3, end) both;
+  animation-delay: var(--pd, 0ms);
+}
+
+/* --- Stepped photo wipe ---------------------------------------------------
+
+   A photograph revealed in six hard steps from the bottom, like a slow
+   raster, rather than a smooth fade. On touch screens there is no hover to
+   wait for, so the photo is simply shown. */
+.photo-wipe {
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 360ms steps(6, end);
+}
+
+.group:is(:hover, :focus-within) .photo-wipe {
+  clip-path: inset(0 0 0 0);
+}
+
+@media (hover: none) {
+  .photo-wipe {
+    clip-path: none;
+  }
+}
+
+/* --- Small recurring pieces ---------------------------------------------- */
+
+/* A live marker's ring pulses three times when first seen, then rests. */
+@keyframes pulse-ring {
+  from {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+html[data-js] .pulse-once {
+  opacity: 0;
+}
+
+html[data-js] [data-inview] .pulse-once {
+  animation: pulse-ring 1.2s var(--ease-out-expo) 3 both;
+  animation-delay: var(--delay, 300ms);
+}
+.cursor-blink {
+  animation: blink 1.05s steps(1, end) infinite;
+}
+
+/* Bobs three times, then rests. A scroll cue that never stops is noise. */
+.bob-step {
+  animation: bob 1.1s steps(1, end) 3 both;
+  animation-delay: var(--delay, 0ms);
+}
+
+/* ===========================================================================
+   REDUCED MOTION
+   Final states, immediately, everywhere. This overrides every rule above.
    ========================================================================= */
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -355,8 +723,29 @@
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  html[data-js] [data-reveal],
+  html[data-js] [data-draw],
+  html[data-js] .pixel-glyph[data-assemble] rect,
+  html[data-js] .pixel-text[data-drop] rect {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  .intro-scan {
+    clip-path: none !important;
+  }
+
+  .intro-scanline,
+  .pulse-once,
+  .cursor-blink,
+  .bob-step {
+    display: none !important;
   }
 }

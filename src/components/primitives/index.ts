@@ -15,3 +15,8 @@ export { Annotation, DimensionLine, type AnnotationProps, type DimensionLineProp
 export { TitleBlock, type TitleBlockField, type TitleBlockProps } from "./title-block";
 export { DraftingSheet, type DraftingSheetProps } from "./drafting-sheet";
 export { Chip, DisciplineMarker, type ChipProps, type DisciplineMarkerProps } from "./chip";
+export { Reveal, type RevealProps } from "./reveal";
+export { stagger } from "@/lib/motion";
+export { DecodeText, type DecodeTextProps } from "./decode-text";
+export { PixelGlyph, type PixelGlyphProps } from "./pixel-glyph";
+export { PixelText, type PixelTextProps } from "./pixel-text";
