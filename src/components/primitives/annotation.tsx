@@ -87,7 +87,7 @@ export function DimensionLine({ orientation = "horizontal", value, className, ..
     <div aria-hidden className={cn("pointer-events-none flex items-center justify-center", isHorizontal ? "h-4 w-full flex-row" : "h-full w-4 flex-col", className)} {...props}>
       <span className={cn("shrink-0 bg-rule-strong", isHorizontal ? "h-3 w-px" : "h-px w-3")} />
       <span className={cn("flex-1 bg-rule-strong", isHorizontal ? "h-px" : "w-px")} />
-      <span className={cn("bg-paper px-1 font-mono text-label uppercase text-ink-muted", !isHorizontal && "[writing-mode:vertical-rl] py-1")}>{value}</span>
+      <span className={cn("shrink-0 whitespace-nowrap bg-paper px-1 font-mono text-label uppercase text-ink-muted", !isHorizontal && "[writing-mode:vertical-rl] py-1")}>{value}</span>
       <span className={cn("flex-1 bg-rule-strong", isHorizontal ? "h-px" : "w-px")} />
       <span className={cn("shrink-0 bg-rule-strong", isHorizontal ? "h-3 w-px" : "h-px w-3")} />
     </div>

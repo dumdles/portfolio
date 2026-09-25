@@ -44,12 +44,12 @@ export function SectionHeader({ part, eyebrow, title, lead, as: Heading = "h2", 
       {(part || eyebrow) && (
         <div data-reveal="fade" className={cn("flex w-full items-center gap-3", align === "center" && "justify-center")}>
           {part && (
-            <TechnicalLabel aria-hidden tone="brand" className="tabular-nums">
+            <TechnicalLabel aria-hidden tone="brand" className="text-body-sm tracking-[0.08em] tabular-nums">
               <DecodeText text={part} start={inView} duration={320} />
             </TechnicalLabel>
           )}
           {eyebrow && (
-            <TechnicalLabel>
+            <TechnicalLabel className="text-body-sm tracking-[0.08em]">
               <DecodeText text={eyebrow} start={inView} delay={60} />
             </TechnicalLabel>
           )}
