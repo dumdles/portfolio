@@ -370,9 +370,6 @@ Three things changed against the plan as written, all for the better:
 - Project entries are labelled open slots rather than invented work. A
   portfolio describing projects that do not exist is worse than a short one.
 
-**Phase 2 — Spine.** Rebuild Hero, Works index, and Timeline in the new language.
-Ship it. At this point the site is already better than what is live.
-
 **Interlude — Craft pass. Done.** A motion system and a pixel system, added
 between phases rather than as one, because every later phase uses them.
 Snappy timed entrances, a hero choreographed to land in about a second, a
@@ -382,9 +379,19 @@ expanded at the same time: the timeline now nests what happened at each
 school, and the service entry reflects the Digital and Intelligence Service.
 Documented in `DESIGN-SYSTEM.md` §8 and §9.
 
-**Phase 3 — Content depth.** Case study routes and the MDX pipeline. Write two or
-three real case studies. This is the phase that takes longest and it is writing,
-not code.
+**Phase 3 — Content depth. Started.** The case study route is built and RMAP
+has the first write-up, at `/projects/rmap`. It went a different way from the
+plan: typed data files in `content/case-studies/` instead of MDX, because
+every section is a drawing (an architecture diagram, a dimensioned report
+number, a workflow with its offline stretch framed) and prose-first MDX would
+have fought that. Documented in `DESIGN-SYSTEM.md` §10.
+
+All site copy was rewritten at the same time against
+`.claude/skills/unslop-portfolio-copy/SKILL.md`, which now governs any text
+on the site. The contact form went too: it reported "Message sent" and
+discarded the message.
+
+Still to do: two or three more case studies. This is writing, not code.
 
 **Phase 4 — The rest.** Craft gallery, Security terminal, Toolbelt bento, Hobbies
 port, Contact with a working backend, Colophon.

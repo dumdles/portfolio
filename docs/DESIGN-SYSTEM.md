@@ -60,6 +60,7 @@ src/
     globals.css            all design tokens, base styles, utilities
     layout.tsx             fonts, metadata, theme provider
     page.tsx               the spine: which sections, in what order
+    projects/[slug]/       case study pages, one per file in content/case-studies
     styleguide/page.tsx    the rendered reference
   components/
     primitives/            the design system
@@ -77,6 +78,7 @@ src/
       pixel-text.tsx       the 5x7 pixel face
       index.ts             import from here
     sections/              one file per numbered section, plus the footer
+    case-study/            the section kinds a case study is built from
     ui/                    shadcn/ui, remapped onto system tokens
     theme-provider.tsx
     theme-toggle.tsx
@@ -86,10 +88,12 @@ src/
     timeline.ts            education, work and service, with what
                            happened at each school
     hobbies.ts             the off-the-clock cards
+    case-studies/          one file per case study, plus the shared types
   hooks/
     use-reduced-motion.ts
     use-in-view.ts
   lib/
+    utils.ts               cn(), with the type scale registered
     motion.ts              stagger(), callable from server components
     pixel/
       glyphs.ts            glyph bitmaps
@@ -216,6 +220,17 @@ Display sizes are fluid via `clamp()` and need no responsive variants. Write
 Headings carry negative tracking at the display sizes; that is baked into the
 tokens, so do not add `tracking-tight` on top.
 
+**Adding a size token.** Register it in `src/lib/utils.ts` as well as in
+`globals.css`. `cn()` runs classes through tailwind-merge, which does not
+read the theme. Until September 2026 it took `text-label` for a text colour
+and dropped it whenever a colour class followed, so every `TechnicalLabel`,
+section lead and card title rendered at the wrong size. Any new size it does
+not know about will be dropped the same way.
+
+`SectionHeader` sets its part number and eyebrow at `text-body-sm` with
+`0.08em` tracking. At `text-label` they are too faint beside a display
+heading.
+
 ---
 
 ## 6. Space and depth
@@ -277,6 +292,14 @@ not to hand-roll this again:
 3. `prefers-reduced-motion` disables the tilt and the sheen.
 4. Keyboard focus inside the card produces a visible lift, so the card is not
    inert to anyone not using a mouse.
+
+**Never put a pixel glyph inside a `TiltCard`.** While the card tilts, the
+browser draws it to a bitmap and resamples that bitmap every frame, the same
+as any 3D-transformed layer. Pixel art does not survive resampling: a works
+tile watermark went from 3 colours at rest to about 1,860 mid-tilt. Render
+the glyph as an absolutely positioned sibling of the card inside the
+`BentoItem`, and hold its space inside the card with a spacer if the layout
+needs it. `works-section.tsx` and `hobbies-section.tsx` show the pattern.
 
 ### `BentoGrid` and `BentoItem`
 
@@ -503,13 +526,66 @@ or two belongs in it.
 
 ### Where the pixel system appears
 
-The three verbs in the hero line, each works tile's watermark, the hobby
-cards, the navbar mark, the scroll cue, and the footer wordmark. That list is
-the budget. Adding a glyph elsewhere should mean removing one.
+The two verbs in the hero line and the discipline legend under it, each
+works tile's watermark, the hobby cards, the navbar mark, the scroll cue, and
+the footer wordmark. That list is the budget. Adding a glyph elsewhere should mean removing one.
 
 ---
 
-## 10. Theming
+## 10. Case studies
+
+A project with a write-up has a data file in `src/content/case-studies/`,
+registered in its `index.ts`, and a `href` on its entry in
+`content/projects.ts`. The route `projects/[slug]` is generated statically
+from that list, and any other slug is a 404.
+
+A case study is a lead, a title block and a list of typed sections. Each
+section gets a `DraftingSheet` and a `SectionHeader` lettered A, B, C, and
+its `kind` picks the component that draws it:
+
+| Kind | Component | For |
+|---|---|---|
+| `prose` | `Prose` | Paragraphs. The first sets in ink, the rest muted. |
+| `list` | `List` | Short parallel facts, two columns from `md`. |
+| `system` | `SystemDiagram` | An architecture drawing with a parts list. |
+| `flow` | `Flow` | Numbered steps in a row. Steps marked `offline` get a hatched band behind them. |
+| `anatomy` | `Anatomy` | A code or identifier, dimensioned segment by segment. |
+| `contributions` | `Contributions` | Prose beside commit-share bars. |
+| `milestones` | `Milestones` | Dated entries on a spine. |
+
+### `SystemDiagram`
+
+An SVG drawn in the diagram's own coordinates (RMAP's is 1080 by 620). Zones
+are dashed boundaries labelled top right, so the balloons never cover them.
+Nodes are boxes with a numbered balloon at the top-left corner. Edges are
+lists of orthogonal points, drawn with `pathLength="1"` so every edge plots
+in over the same time whatever its length.
+
+- On first view the zones and nodes fade in, then the edges draw in the
+  order they are listed. List them in the order a request travels.
+- Hovering a node, in the drawing or in the parts list, lights its edges and
+  sends a packet along each, running away from the hovered node. Everything
+  else dims. Packets exist only while something is hovered, and never under
+  reduced motion.
+- The dimming sits on an outer `<g>` and the entrance on an inner one.
+  Putting both on one element lets the entrance's `animation-fill-mode`
+  override the dim.
+- Below `min-w-[760px]` the drawing scrolls sideways. The parts list under it
+  carries the same information as text, and the SVG is `aria-hidden`.
+
+Keep node boxes at 150 by 52 unless there is a reason. The label and the mono
+sub-label are placed for that height; at 44 they collide.
+
+### Confidentiality
+
+This repository is public. A case study about a client's system names no
+host, endpoint, table, secret or teammate, and says so in its `notice`.
+Every claim should trace to a source listed in the data file's header
+comment.
+
+---
+
+## 11. Theming
 
 `next-themes` writes `class="dark"` onto `<html>`, which is what the `dark`
 variant in `globals.css` matches. It also injects a blocking inline script that
@@ -527,7 +603,7 @@ does not shift when it becomes live.
 
 ---
 
-## 11. Rules of thumb
+## 12. Rules of thumb
 
 **Do**
 
@@ -548,24 +624,27 @@ does not shift when it becomes live.
 - Animate without checking `prefers-reduced-motion`.
 - Loop anything that is not under the pointer.
 - Hide content with CSS that does not also check for `data-js`.
-- Use a fractional `px` on a pixel glyph.
+- Use a fractional `px` on a pixel glyph, or put one inside a `TiltCard`.
 - Put unique information inside an `Annotation` or a `DimensionLine`.
 - Reintroduce per-section background colours. Sections sit on `bg-paper` and
   differentiate through the grid, spacing and content.
 
 ---
 
-## 12. What is not built yet
+## 13. What is not built yet
 
 Phases 3 onward in `PLAN.md`. In rough dependency order:
 
 - **Project content.** Only one entry in `content/projects.ts` is real. The
   rest are labelled open slots, deliberately not filled with invented work.
-- **Case study routes.** MDX pipeline, then `projects/[slug]`.
+- **More case studies.** RMAP is the only one. The route and components are
+  built; each new study is a data file.
 - **02 Craft**, the visual work gallery. Needs six to nine strong images.
 - **04 Security**, the terminal pane. Needs a terminal primitive.
 - **05 Toolbelt**, a bento of tools grouped by discipline.
-- **A real contact backend.** The form currently discards the message.
+- **A contact form.** The old one showed "Message sent" and discarded the
+  message, so it was removed. Contact is LinkedIn and GitHub until there is a
+  backend that delivers.
 - **Command palette**, page transitions, generated OG images.
 
 One primitive is deliberately missing until there is a use for it: the
