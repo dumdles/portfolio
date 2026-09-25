@@ -678,6 +678,86 @@ html[data-js] .pixel-text[data-drop][data-inview] rect {
   }
 }
 
+/* --- System diagrams -------------------------------------------------------
+
+   Connections plot themselves in on first view, in the order a request
+   travels. pathLength="1" on each path makes a dash of 1 exactly its full
+   length, so one keyframe draws any path regardless of its real length. */
+@keyframes draw-path {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.sd-edge {
+  fill: none;
+  stroke: var(--rule-strong);
+  stroke-width: 1.25;
+  stroke-dasharray: 1;
+  transition:
+    stroke var(--dur-snap) linear,
+    stroke-width var(--dur-snap) linear;
+}
+
+.sd-edge.is-on {
+  stroke: var(--brand);
+  stroke-width: 2;
+}
+
+.sd-arrow {
+  fill: var(--rule-strong);
+  transition: fill var(--dur-snap) linear;
+}
+
+.sd-arrow.is-on {
+  fill: var(--brand);
+}
+
+/* Dimming sits on an outer group; entrances animate an inner one. An
+   entrance that animates opacity would otherwise pin it and override the
+   dim once the animation holds its final frame. */
+.sd-link,
+.sd-node {
+  transition: opacity var(--dur-snap) linear;
+}
+
+.sd-link.is-dim {
+  opacity: 0.18;
+}
+
+.sd-node {
+  cursor: pointer;
+}
+
+.sd-node.is-dim {
+  opacity: 0.35;
+}
+
+.sd-box {
+  transition: stroke var(--dur-snap) linear;
+}
+
+html[data-js] .sd-edge {
+  stroke-dashoffset: 1;
+}
+
+html[data-js] [data-inview] .sd-edge {
+  animation: draw-path 560ms var(--ease-out-expo) both;
+  animation-delay: var(--d, 0ms);
+}
+
+html[data-js] .sd-fade {
+  opacity: 0;
+}
+
+html[data-js] [data-inview] .sd-fade {
+  animation: fade var(--dur-base) var(--ease-out-expo) both;
+  animation-delay: var(--d, 0ms);
+}
+
 /* --- Small recurring pieces ---------------------------------------------- */
 
 /* A live marker's ring pulses three times when first seen, then rests. */
@@ -731,6 +811,7 @@ html[data-js] [data-inview] .pulse-once {
 
   html[data-js] [data-reveal],
   html[data-js] [data-draw],
+  html[data-js] .sd-fade,
   html[data-js] .pixel-glyph[data-assemble] rect,
   html[data-js] .pixel-text[data-drop] rect {
     opacity: 1 !important;
@@ -740,6 +821,11 @@ html[data-js] [data-inview] .pulse-once {
 
   .intro-scan {
     clip-path: none !important;
+  }
+
+  html[data-js] .sd-edge {
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
   }
 
   .intro-scanline,
