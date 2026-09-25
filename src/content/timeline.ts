@@ -1,53 +1,84 @@
 /**
- * The merged timeline: education, work and leadership on one spine.
+ * The timeline: education, work and service on one spine.
  *
- * These were three separate lists on the old site. Merging them is the point
- * rather than a tidy-up: polytechnic, the AC Tesla internship and the club
- * roles all overlap, and the overlap is a better story than any single column
- * tells on its own.
+ * Each school carries what happened there, in `involvements`: co-curricular
+ * activities, leadership roles, achievements. Those used to be a separate
+ * "leadership" list with no school attached, which lost the most useful
+ * fact about them, which is where and when they happened.
  *
  * Entries are sorted for display by `start`, newest first, so adding one is
  * just appending to the array.
+ *
+ * ────────────────────────────────────────────────────────────────────────
+ *  STILL TO FILL IN, marked TODO below. Gaps are left empty rather than
+ *  guessed; an empty field renders nothing, so the page stays honest.
+ * ────────────────────────────────────────────────────────────────────────
  */
 
-export type TimelineTrack = "education" | "work" | "leadership";
+export type TimelineTrack = "education" | "work" | "service";
+
+export type InvolvementKind = "cca" | "leadership" | "achievement" | "project";
+
+export const involvementLabels: Record<InvolvementKind, string> = {
+  cca: "CCA",
+  leadership: "Leadership",
+  achievement: "Achievement",
+  project: "Project",
+};
+
+export interface Involvement {
+  kind: InvolvementKind;
+  /** The club, committee, competition or project. */
+  title: string;
+  /** Your position in it. */
+  role?: string;
+  period?: string;
+  /** One line on what you actually did. Omit rather than pad. */
+  detail?: string;
+}
 
 export interface TimelineEntry {
-  /** Stable id, used as the React key and the filter anchor. */
+  /** Stable id, used as the React key. */
   id: string;
   track: TimelineTrack;
-  title: string;
   /** Organisation, school or unit. */
-  org?: string;
+  title: string;
   /** Role or qualification. Shown in mono under the title. */
   role?: string;
+  /** Parent organisation, where the title alone is ambiguous. */
+  org?: string;
   /** One line of detail. Omit rather than pad. */
   detail?: string;
-  /** ISO-ish sort key, YYYY-MM. Only used for ordering. */
+  /** YYYY-MM. Only used for ordering. */
   start: string;
   /** Human-readable period as it should be printed. */
   period: string;
-  /** Marks the entry as current; renders a live dot. */
+  /** Marks the entry as current; renders a live marker. */
   current?: boolean;
+  /** What happened here beyond the headline. Schools mostly. */
+  involvements?: Involvement[];
 }
 
 export const tracks: { id: TimelineTrack; label: string }[] = [
   { id: "education", label: "Education" },
   { id: "work", label: "Work" },
-  { id: "leadership", label: "Leadership" },
+  { id: "service", label: "Service" },
 ];
 
 export const timeline: TimelineEntry[] = [
-  // --- Work ---------------------------------------------------------------
+  // --- Service ------------------------------------------------------------
   {
-    id: "saf",
-    track: "work",
-    title: "Singapore Armed Forces",
-    role: "Full-time National Serviceman",
+    id: "dis",
+    track: "service",
+    title: "Digital and Intelligence Service",
+    org: "Singapore Armed Forces",
+    role: "C4X Expert",
     start: "2025-09",
     period: "Sep 2025 — Present",
     current: true,
   },
+
+  // --- Work ---------------------------------------------------------------
   {
     id: "ac-tesla",
     track: "work",
@@ -84,6 +115,11 @@ export const timeline: TimelineEntry[] = [
     detail: "With a Certificate in Design & Media.",
     start: "2022-04",
     period: "2022 — 2025",
+    involvements: [
+      { kind: "leadership", title: "SP Infocomm Club", role: "Programme Head", period: "2024 — 2025" },
+      { kind: "leadership", title: "Electrical and Electronic Engineering Club", role: "Publications Secretary", period: "2023 — 2024" },
+      // TODO: final-year project, awards, competitions, other clubs.
+    ],
   },
   {
     id: "sst",
@@ -93,6 +129,11 @@ export const timeline: TimelineEntry[] = [
     detail: "Design Studies as an applied subject.",
     start: "2018-01",
     period: "2018 — 2021",
+    involvements: [
+      { kind: "cca", title: "Robotics@APEX", role: "Logistics Head", period: "2020 — 2021" },
+      { kind: "leadership", title: "Class Committee", role: "Vice-Chairperson", period: "2021" },
+      // TODO: competitions, awards, other roles.
+    ],
   },
   {
     id: "horizon",
@@ -101,40 +142,7 @@ export const timeline: TimelineEntry[] = [
     role: "PSLE",
     start: "2012-01",
     period: "2012 — 2017",
-  },
-
-  // --- Leadership ---------------------------------------------------------
-  {
-    id: "infocomm",
-    track: "leadership",
-    title: "SP Infocomm Club",
-    role: "Programme Head",
-    start: "2024-04",
-    period: "2024 — 2025",
-  },
-  {
-    id: "eee-club",
-    track: "leadership",
-    title: "Electrical and Electronic Engineering Club",
-    role: "Publications Secretary",
-    start: "2023-04",
-    period: "2023 — 2024",
-  },
-  {
-    id: "vice-chair",
-    track: "leadership",
-    title: "Class Vice-Chairperson",
-    role: "School of Science and Technology",
-    start: "2021-01",
-    period: "2021",
-  },
-  {
-    id: "robotics-apex",
-    track: "leadership",
-    title: "Robotics@APEX",
-    role: "Logistics Head",
-    start: "2020-01",
-    period: "2020 — 2021",
+    // TODO: CCA and any roles.
   },
 ];
 

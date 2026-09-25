@@ -2,77 +2,62 @@
 
 import Image from "next/image";
 import React from "react";
-import { BentoGrid, BentoItem, TiltCard, SectionHeader } from "@/components/primitives";
-import { cn } from "@/lib/utils";
-import type { BentoSize } from "@/components/primitives";
+import { BentoGrid, BentoItem, DraftingSheet, PixelGlyph, Reveal, SectionHeader, TechnicalLabel, TiltCard, stagger } from "@/components/primitives";
+import { hobbies, type Hobby } from "@/content/hobbies";
 
-interface HobbyCardProps {
-  title: string;
-  details?: string;
-  imageUrl: string;
-  /** Tailwind classes for this tile's colour treatment. */
-  tone: string;
-  size?: BentoSize;
-}
+/**
+ * 06 — Off the clock.
+ *
+ * Each tile is a small specimen card: a hand-drawn pixel glyph, a name, and
+ * a photograph that rasters in on hover. The glyph wakes at the same moment,
+ * so the whole card responds as one object.
+ *
+ * The old version used six saturated background fills. They were fun, and
+ * the only part of the page that did not belong to the rest of it.
+ */
 
-const HobbyCard: React.FC<HobbyCardProps> = ({ title, details, imageUrl, tone, size = "sm" }) => {
+function HobbyTile({ hobby, index }: { hobby: Hobby; index: number }) {
   return (
-    <BentoItem size={size}>
-      <TiltCard chrome={false} maxTilt={7} hoverScale={1.03} className={cn("group h-full rounded-lg border-2 p-4 shadow-card sm:p-6", tone)}>
-        {/* Revealed on hover. Hidden from assistive tech: it is atmosphere,
-            and the title already names the hobby. */}
-        {/* Revealed on hover, and shown permanently on touch devices, where
-            hover never fires and the tiles would otherwise be flat colour. */}
-        <Image
-          src={imageUrl}
-          alt=""
-          aria-hidden
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-80 [@media(hover:none)]:opacity-70"
-        />
+    <BentoItem size={hobby.size} data-reveal style={stagger(index)}>
+      <TiltCard maxTilt={6} className="glyph-trigger group flex h-full min-h-48 flex-col justify-between p-5 sm:p-6" glare={false}>
+        {/* Photograph, rastered in on hover. Decorative: the title names it. */}
+        <div aria-hidden className="photo-wipe pointer-events-none absolute inset-0">
+          <Image src={hobby.image} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/55 to-surface/0" />
+        </div>
 
-        <div className="relative z-10 flex h-full flex-col justify-end">
-          <h3 className="font-display text-heading-sm font-bold sm:text-heading">{title}</h3>
-          {details && <p className="text-body-sm font-medium opacity-90">{details}</p>}
+        <div className="relative flex items-start justify-between">
+          <PixelGlyph name={hobby.glyph} px={5} accent={hobby.accent} hover={hobby.motion} assemble="view" delay={160 + index * 60} step={12} className="text-ink" />
+          <TechnicalLabel className="tabular-nums">06.{index + 1}</TechnicalLabel>
+        </div>
+
+        <div className="relative mt-10">
+          <h3 className="font-display text-heading-sm font-semibold text-ink sm:text-heading">{hobby.title}</h3>
+          {hobby.note && <p className="mt-1 text-body-sm text-ink-muted">{hobby.note}</p>}
         </div>
       </TiltCard>
     </BentoItem>
   );
-};
+}
 
 export default function HobbiesSection() {
   return (
-    <section id="hobbies" className="flex min-h-screen flex-col items-center justify-center bg-paper p-4 text-ink">
-      <div className="w-full max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
-        <SectionHeader
-          part="06"
-          eyebrow="Off the clock"
-          align="center"
-          className="mb-12"
-          title={<>I promise I&apos;m not a boring person...</>}
-          lead="Here are some of my hobbies and interests."
-        />
+    <DraftingSheet id="hobbies" grid="none">
+      <SectionHeader
+        part="06"
+        eyebrow="Off the clock"
+        className="mb-10"
+        title={<>I promise I&apos;m not a boring person…</>}
+        lead="Some of what I do when nobody is paying me to. Point at one."
+      />
 
-        <BentoGrid columns={3}>
-          <HobbyCard title="Design" imageUrl="/images/design-hobby.jpg" tone="bg-green-300 border-green-500 text-green-950 dark:bg-green-700 dark:border-green-500 dark:text-green-50" />
-          <HobbyCard title="Media" imageUrl="/images/media-hobby.jpg" tone="bg-blue-300 border-blue-500 text-blue-950 dark:bg-blue-700 dark:border-blue-500 dark:text-blue-50" />
-          <HobbyCard title="Cycling" imageUrl="/images/cycling-hobby.jpg" tone="bg-red-300 border-red-500 text-red-950 dark:bg-red-700 dark:border-red-500 dark:text-red-50" />
-          <HobbyCard title="Guitar" imageUrl="/images/guitar-hobby.jpg" tone="bg-yellow-300 border-yellow-500 text-yellow-950 dark:bg-yellow-700 dark:border-yellow-500 dark:text-yellow-50" />
-          <HobbyCard
-            title="Making new connections"
-            imageUrl="/images/connections-hobby.jpg"
-            size="md"
-            tone="bg-purple-300 border-purple-500 text-purple-950 dark:bg-purple-700 dark:border-purple-500 dark:text-purple-50"
-          />
-          <HobbyCard
-            title="Serving the community"
-            imageUrl="/images/community-hobby.jpg"
-            size="md"
-            tone="bg-cyan-300 border-cyan-500 text-cyan-950 dark:bg-cyan-700 dark:border-cyan-500 dark:text-cyan-50"
-          />
+      <Reveal>
+        <BentoGrid columns={4}>
+          {hobbies.map((hobby, i) => (
+            <HobbyTile key={hobby.id} hobby={hobby} index={i} />
+          ))}
         </BentoGrid>
-      </div>
-    </section>
+      </Reveal>
+    </DraftingSheet>
   );
 }

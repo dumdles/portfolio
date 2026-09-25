@@ -3,8 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { BentoGrid, BentoItem, DisciplineMarker, DraftingSheet, SectionHeader, TechnicalLabel, TiltCard } from "@/components/primitives";
-import { disciplineLabels, projects, type Project } from "@/content/projects";
+import { BentoGrid, BentoItem, DisciplineMarker, DraftingSheet, PixelGlyph, Reveal, SectionHeader, TechnicalLabel, TiltCard, stagger } from "@/components/primitives";
+import { disciplineLabels, projects, type Discipline, type Project } from "@/content/projects";
 import { cn } from "@/lib/utils";
 
 /**
@@ -18,7 +18,36 @@ import { cn } from "@/lib/utils";
  * where it reads as deliberate rather than as a scroll gimmick.
  */
 
-function ProjectTile({ project }: { project: Project }) {
+const disciplineAccent: Record<Discipline, string> = {
+  design: "var(--design)",
+  build: "var(--build)",
+  break: "var(--break)",
+};
+
+/**
+ * The tile's watermark: a large pixel glyph for its primary discipline,
+ * sitting quietly in the corner until the tile is hovered, when it wakes.
+ */
+function Watermark({ project }: { project: Project }) {
+  const discipline = project.disciplines[0];
+  return (
+    <PixelGlyph
+      name={discipline}
+      px={project.size === "lg" ? 6 : 4}
+      accent={disciplineAccent[discipline]}
+      hover={discipline === "break" ? "swap" : "loop"}
+      assemble="view"
+      delay={220}
+      step={12}
+      className={cn(
+        "pointer-events-none absolute bottom-4 right-4 text-ink-faint transition-opacity duration-200",
+        project.placeholder ? "opacity-35 group-hover/tile:opacity-60" : "opacity-40 group-hover/tile:opacity-90"
+      )}
+    />
+  );
+}
+
+function ProjectTile({ project, index }: { project: Project; index: number }) {
   const body = (
     <>
       <div className="flex items-start justify-between gap-3">
@@ -30,7 +59,7 @@ function ProjectTile({ project }: { project: Project }) {
         <TechnicalLabel className="shrink-0 tabular-nums">{project.year}</TechnicalLabel>
       </div>
 
-      <div className="mt-auto flex flex-col gap-3 pt-8">
+      <div className="relative z-10 mt-auto flex flex-col gap-3 pt-8 pr-10">
         <h3 className={cn("font-display font-semibold text-ink", project.size === "lg" ? "text-heading-lg" : "text-heading")}>{project.title}</h3>
         <p className="max-w-prose text-body-sm text-pretty text-ink-muted">{project.summary}</p>
 
@@ -69,15 +98,21 @@ function ProjectTile({ project }: { project: Project }) {
   // elevation, no tilt. It should read as a space reserved on the sheet.
   if (project.placeholder) {
     return (
-      <BentoItem size={project.size}>
-        <div className="flex h-full flex-col rounded-lg border border-dashed border-rule-strong bg-transparent p-5 sm:p-6">{body}</div>
+      <BentoItem size={project.size} data-reveal style={stagger(index)}>
+        <div className="glyph-trigger group/tile relative flex h-full flex-col rounded-lg border border-dashed border-rule-strong bg-transparent p-5 sm:p-6">
+          {body}
+          <Watermark project={project} />
+        </div>
       </BentoItem>
     );
   }
 
   return (
-    <BentoItem size={project.size}>
-      <TiltCard className="flex h-full flex-col p-5 sm:p-6">{body}</TiltCard>
+    <BentoItem size={project.size} data-reveal style={stagger(index)}>
+      <TiltCard className="glyph-trigger group/tile flex h-full flex-col p-5 sm:p-6">
+        {body}
+        <Watermark project={project} />
+      </TiltCard>
     </BentoItem>
   );
 }
@@ -95,11 +130,13 @@ export function WorksSection() {
         lead="Tile size is a judgement about what is worth your time, not a layout accident. Markers show which of the three disciplines each piece belongs to."
       />
 
-      <BentoGrid columns={4}>
-        {projects.map((project) => (
-          <ProjectTile key={project.id} project={project} />
-        ))}
-      </BentoGrid>
+      <Reveal>
+        <BentoGrid columns={4}>
+          {projects.map((project, i) => (
+            <ProjectTile key={project.id} project={project} index={i} />
+          ))}
+        </BentoGrid>
+      </Reveal>
 
       <p className="mt-6 font-mono text-label uppercase text-ink-faint">
         {filled} of {projects.length} slots filled

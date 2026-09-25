@@ -5,12 +5,30 @@
  * a component. The positioning line does more work than any visual on the
  * page, so it is the one string worth agonising over.
  */
+
+import type { GlyphName } from "@/lib/pixel/glyphs";
+
+/**
+ * The positioning line, split so each verb can carry its discipline glyph.
+ * A plain string is set as written; a `verb` gets a pixel glyph that
+ * assembles beside it and reacts when hovered.
+ */
+export type PositioningPart = string | { verb: string; glyph: GlyphName; accent: string };
+
 export const profile = {
   name: "Dylan Chong",
   handle: "dumdles",
 
-  /** The line under the name. Says all three disciplines as one sentence. */
-  positioning: "I design the thing, build the thing, then try to break it.",
+  /** Says all three disciplines as one sentence. */
+  positioning: [
+    "I ",
+    { verb: "design", glyph: "design", accent: "var(--design)" },
+    " the thing, ",
+    { verb: "build", glyph: "build", accent: "var(--build)" },
+    " the thing, then try to ",
+    { verb: "break", glyph: "break", accent: "var(--break)" },
+    " it.",
+  ] satisfies readonly PositioningPart[],
 
   /**
    * Expanded introduction. Two sentences at most; the timeline and the works
@@ -22,13 +40,16 @@ export const profile = {
   /** The drawing's title block. Order matters; it reads left to right. */
   titleBlock: [
     { label: "Location", value: "Singapore" },
-    { label: "Status", value: "NSF, Singapore Armed Forces" },
+    { label: "Currently", value: "C4X Expert, Digital and Intelligence Service" },
     { label: "Disciplines", value: "Design · Software · Security" },
     { label: "Availability", value: "Open to conversations" },
   ],
 
+  /**
+   * Public contact routes. There is deliberately no email address here yet:
+   * which address to publish, if any, is the site owner's call.
+   */
   links: {
-    email: "dylansfchong@gmail.com",
     github: "https://github.com/dumdles",
     linkedin: "https://www.linkedin.com/in/dumdles",
   },

@@ -4,6 +4,7 @@ import { TimelineSection } from "@/components/sections/timeline-section";
 import HobbiesSection from "@/components/sections/hobbies-section";
 import ContactSection from "@/components/sections/contact-section";
 import Navbar from "@/components/Navbar";
+import { SiteFooter } from "@/components/sections/site-footer";
 
 /**
  * The spine of the site, in the order a first-time visitor should meet it.
@@ -27,6 +28,7 @@ export default function HomePage() {
         <HobbiesSection />
         <ContactSection />
       </main>
+      <SiteFooter />
     </div>
   );
 }

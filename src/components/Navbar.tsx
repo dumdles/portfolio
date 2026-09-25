@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { PixelGlyph } from "@/components/primitives";
 import { cn } from "@/lib/utils";
 
 // Order and ids follow the section part numbers in docs/PLAN.md.
@@ -95,7 +96,11 @@ export default function Navbar() {
           first, the link row spanning the full width on the second. Squeezing
           six links into the gap beside the toggle clipped them mid-word. */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 md:flex-nowrap md:justify-between">
-        <span className="order-1 mr-auto shrink-0 font-display text-heading-sm font-bold text-ink md:mr-0">dumdles</span>
+        <a href="#home" className="glyph-trigger order-1 mr-auto inline-flex shrink-0 items-center gap-2.5 font-display text-heading-sm font-bold text-ink md:mr-0">
+          {/* The site mark. Its cursor blinks while hovered. */}
+          <PixelGlyph name="monogram" px={3} hover="loop" />
+          dumdles
+        </a>
 
         {/* The link row scrolls on narrow screens. The mask fades the right
             edge so a clipped link reads as "there is more", rather than as a
