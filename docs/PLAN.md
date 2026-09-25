@@ -373,6 +373,15 @@ Three things changed against the plan as written, all for the better:
 **Phase 2 — Spine.** Rebuild Hero, Works index, and Timeline in the new language.
 Ship it. At this point the site is already better than what is live.
 
+**Interlude — Craft pass. Done.** A motion system and a pixel system, added
+between phases rather than as one, because every later phase uses them.
+Snappy timed entrances, a hero choreographed to land in about a second, a
+CAD crosshair over the portrait, hand-drawn pixel glyphs that wake on hover,
+a 5×7 pixel face for the footer wordmark, and the colophon from §3. Content
+expanded at the same time: the timeline now nests what happened at each
+school, and the service entry reflects the Digital and Intelligence Service.
+Documented in `DESIGN-SYSTEM.md` §8 and §9.
+
 **Phase 3 — Content depth.** Case study routes and the MDX pipeline. Write two or
 three real case studies. This is the phase that takes longest and it is writing,
 not code.

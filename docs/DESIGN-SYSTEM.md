@@ -71,17 +71,29 @@ src/
       title-block.tsx
       drafting-sheet.tsx
       chip.tsx             Chip + DisciplineMarker
+      reveal.tsx           scroll entrance trigger
+      decode-text.tsx      mono text that locks on out of noise
+      pixel-glyph.tsx      hand-drawn pixel glyphs
+      pixel-text.tsx       the 5x7 pixel face
       index.ts             import from here
-    sections/              one file per numbered section
+    sections/              one file per numbered section, plus the footer
     ui/                    shadcn/ui, remapped onto system tokens
     theme-provider.tsx
     theme-toggle.tsx
   content/                 all copy and data; no prose lives in a component
     profile.ts             hero copy and the title block
     projects.ts            the works index
-    timeline.ts            education, work and leadership
+    timeline.ts            education, work and service, with what
+                           happened at each school
+    hobbies.ts             the off-the-clock cards
   hooks/
     use-reduced-motion.ts
+    use-in-view.ts
+  lib/
+    motion.ts              stagger(), callable from server components
+    pixel/
+      glyphs.ts            glyph bitmaps
+      font.ts              the 5x7 face
 ```
 
 Import primitives from the barrel, not from individual files:
@@ -352,7 +364,152 @@ continuous sheet. Set `contained={false}` for full-bleed layouts.
 
 ---
 
-## 8. Theming
+## 8. Motion
+
+Motion on this site is a craft, not a garnish. Four rules, in order:
+
+1. **Short.** Nothing that responds to the visitor takes longer than
+   `--dur-base` (440ms). Only one-time entrances may use `--dur-slow` (780ms).
+2. **Once.** Entrances play the first time something is seen and never again.
+   The only loops run while a pointer rests on the thing that loops. A scroll
+   cue bobs three times, a live marker pulses three times, and both then rest.
+3. **Pixel things step; drawn things curve.** Pixel glyphs and pixel type use
+   `steps()` timing so they snap like sprite frames. Lines, cards and type
+   use `--ease-out-expo`, so they land hard and settle.
+4. **The OS setting wins.** Under `prefers-reduced-motion` every final state
+   is shown immediately, with no exceptions.
+
+### Tokens
+
+| Token | Value | Use for |
+|---|---|---|
+| `--dur-snap` | 140ms | Colour and opacity responses to hover |
+| `--dur-quick` | 260ms | Pixel pops, crop marks, small snaps |
+| `--dur-base` | 440ms | Text and cards rising into place |
+| `--dur-slow` | 780ms | One-time entrances: rules drawing, the portrait scan |
+| `--ease-out-expo` | `cubic-bezier(.16, 1, .3, 1)` | Anything drawn |
+| `--ease-in-out-crisp` | `cubic-bezier(.65, 0, .35, 1)` | The scan, which accelerates and brakes |
+| `--stagger` | 70ms | Gap between siblings in a staggered entrance |
+
+### Scroll entrances
+
+Wrap a small group in `<Reveal>`. When it enters the viewport it sets
+`data-inview`, and descendants opt in with attributes:
+
+```tsx
+<Reveal className="grid gap-4">
+  {items.map((item, i) => (
+    <div key={item.id} data-reveal style={stagger(i)}>…</div>
+  ))}
+</Reveal>
+```
+
+- `data-reveal` rises 14px into place. `data-reveal="fade"` only fades.
+- `data-draw` draws a rule in from the left.
+- `stagger(i)` sets the index that spaces siblings one `--stagger` apart.
+
+Keep Reveals small and local. Everything marked inside one plays the moment
+it is seen, so a Reveal around a whole long section would play entrances for
+content still far below the fold.
+
+`SectionHeader` is already its own trigger: its label decodes, its rule
+draws, and its title and lead rise. Every section gets that entrance for free.
+
+**Nothing is ever hidden by a stylesheet alone.** An inline script in
+`layout.tsx` sets `data-js` on `<html>` before first paint, and the hidden
+starting states only apply under that attribute. With JavaScript off the
+page is simply static and complete. This is verified, not assumed: the
+check counts hidden elements with scripts disabled, and under reduced
+motion, and both must be zero.
+
+### Load choreography
+
+The hero plays on first paint without waiting for hydration, so its timing
+is pure CSS. The `intro-*` classes (`intro-rise`, `intro-mask-rise`,
+`intro-fade`, `intro-draw-x`, `intro-draw-y`, `intro-scan`,
+`intro-scanline`, `intro-snap`) each read their own `--delay`. The full
+sequence is written out at the top of `hero-section.tsx`; it lands in about
+a second and then stays still.
+
+### `DecodeText`
+
+Mono text that resolves out of noise, left to right, like a readout locking
+on. The site's nod to security work. **Labels only**: part numbers, eyebrows,
+title block field names. Never prose, never display type, where varying glyph
+widths would make the line jitter. The noise is ASCII, so every frame stays
+in the loaded font subset, and ligatures are switched off so `>=` never
+collapses into one glyph mid-animation. The real text is always present for
+assistive technology.
+
+---
+
+## 9. The pixel system
+
+A small, deliberate counterpoint to the drafting language: hand-drawn pixel
+glyphs and a pixel typeface. Used sparingly, where a touch of play earns its
+place.
+
+### `PixelGlyph`
+
+```tsx
+<PixelGlyph name="break" px={3} accent="var(--break)" hover="swap" assemble="view" />
+```
+
+| Prop | Notes |
+|---|---|
+| `name` | A glyph from `src/lib/pixel/glyphs.ts`. |
+| `px` | Screen pixels per glyph pixel. **Whole numbers only**; pixel art at a fractional scale smears. |
+| `accent` | Colour for accent pixels. Ink pixels use `currentColor`. |
+| `assemble` | `"view"` sweeps the pixels in diagonally when scrolled into view; `"intro"` does it on first paint, for the hero. |
+| `hover` | `"swap"` shows frame 1 while hovered (a lock opening). `"loop"` alternates both frames (a heart beating). |
+| `frame` | Show one frame statically, for specimen sheets. |
+
+Hover is triggered by the nearest ancestor with the `glyph-trigger` class,
+so a whole card or a whole word can wake its glyph.
+
+### The glyphs
+
+| Glyph | Size | On hover |
+|---|---|---|
+| `design` | 12×12 | Selection marquee; the ants march |
+| `build` | 12×12 | `</>`; the slash becomes a typed cursor |
+| `break` | 12×12 | Padlock; it opens |
+| `monogram` | 8×7 | The site mark; its cursor blinks |
+| `nib` | 11×12 | Pen nib; it drips ink |
+| `camera` | 12×12 | Camera; the flash fires |
+| `bike` | 14×8 | Bicycle; spokes turn and pedals cycle |
+| `guitar` | 12×14 | Guitar; a note sounds |
+| `network` | 12×11 | Three connected nodes; they ping |
+| `heart` | 11×9 | Heart; it beats |
+| `arrowDown` | 7×8 | Static. The scroll cue |
+
+**Drawing a new glyph.** Add it to `glyphs.ts` as rows of characters: `#`
+for ink, `+` for accent, `.` for empty. Every row in a frame must be the same
+width. Two tones only. Design it at the size it will be seen, then check it
+at `px` 2 and 5 on `/styleguide`; the nib and the guitar were both redrawn
+after they read as a shield and a bottle at card size.
+
+### `PixelText`
+
+The site's 5×7 face, from `src/lib/pixel/font.ts`: A to Z, 0 to 9 and the
+punctuation it uses. It sets the footer wordmark. Nothing longer than a word
+or two belongs in it.
+
+- `drop` makes pixels fall into place column by column, bottom row first.
+- `interactive` lights pixels near the pointer in the brand colour.
+- `fluid` scales to the container. Fluid text gets an even gap between
+  cells, because fractional scaling otherwise leaves uneven hairline seams;
+  the gap turns that flaw into an LED matrix.
+
+### Where the pixel system appears
+
+The three verbs in the hero line, each works tile's watermark, the hobby
+cards, the navbar mark, the scroll cue, and the footer wordmark. That list is
+the budget. Adding a glyph elsewhere should mean removing one.
+
+---
+
+## 10. Theming
 
 `next-themes` writes `class="dark"` onto `<html>`, which is what the `dark`
 variant in `globals.css` matches. It also injects a blocking inline script that
@@ -370,7 +527,7 @@ does not shift when it becomes live.
 
 ---
 
-## 9. Rules of thumb
+## 11. Rules of thumb
 
 **Do**
 
@@ -379,6 +536,9 @@ does not shift when it becomes live.
 - Use `font-mono uppercase` with `text-label` for anything that is a label.
 - Check new layouts at 360px before considering them done.
 - Add anything new to `/styleguide` in the same commit.
+- Strip metadata from every photo before it goes in `public/`. The raw file
+  is downloadable at its own URL, and Next.js only strips metadata from the
+  optimised copies. See the note under Known rough edges.
 
 **Do not**
 
@@ -386,13 +546,16 @@ does not shift when it becomes live.
 - Add a second accent hue.
 - Write responsive variants for display type; the tokens are already fluid.
 - Animate without checking `prefers-reduced-motion`.
+- Loop anything that is not under the pointer.
+- Hide content with CSS that does not also check for `data-js`.
+- Use a fractional `px` on a pixel glyph.
 - Put unique information inside an `Annotation` or a `DimensionLine`.
 - Reintroduce per-section background colours. Sections sit on `bg-paper` and
   differentiate through the grid, spacing and content.
 
 ---
 
-## 10. What is not built yet
+## 12. What is not built yet
 
 Phases 3 onward in `PLAN.md`. In rough dependency order:
 
@@ -402,7 +565,6 @@ Phases 3 onward in `PLAN.md`. In rough dependency order:
 - **02 Craft**, the visual work gallery. Needs six to nine strong images.
 - **04 Security**, the terminal pane. Needs a terminal primitive.
 - **05 Toolbelt**, a bento of tools grouped by discipline.
-- **Colophon** in the footer.
 - **A real contact backend.** The form currently discards the message.
 - **Command palette**, page transitions, generated OG images.
 
@@ -411,6 +573,12 @@ terminal pane the Security section needs. Build it when that section lands,
 then document it here.
 
 ### Known rough edges
+
+- **Photos in git history still carry metadata.** Every image in
+  `public/images` was re-encoded without EXIF. One of the originals included
+  GPS coordinates, and those originals remain in this repository's history
+  and in any build deployed before the change. Removing them from history
+  means rewriting it, which is the repository owner's decision.
 
 - `next lint` is deprecated in Next 15.5 and removed in 16. The `lint` script
   needs migrating to the ESLint CLI.
