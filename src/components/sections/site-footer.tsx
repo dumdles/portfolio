@@ -9,8 +9,8 @@ import { profile } from "@/content/profile";
  * The footer, drawn as the sheet's title strip: the site's name set in its
  * own pixel face at full width, then the colophon.
  *
- * The colophon is a design convention that only an engineer can fill in
- * honestly, which is the whole pitch of the site in one line of small type.
+ * The colophon lists the typefaces, the stack, and the commit that is
+ * deployed.
  */
 
 const commit = (process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? "").slice(0, 7) || "local";
@@ -18,7 +18,7 @@ const commit = (process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? "").slice(0, 7)
 const colophon = [
   { label: "Set in", value: "Space Grotesk, Inter, JetBrains Mono, and a 5×7 face drawn for this site" },
   { label: "Built with", value: "Next.js, TypeScript, Tailwind CSS" },
-  { label: "Drawn in", value: "Singapore" },
+  { label: "Made in", value: "Singapore" },
   { label: "Revision", value: commit },
 ];
 
@@ -32,15 +32,10 @@ export function SiteFooter() {
   return (
     <footer className="relative border-t border-rule">
       <div className="mx-auto w-full max-w-6xl px-4 pb-10 pt-16 sm:px-6 lg:px-8">
-        <Reveal className="flex flex-col justify-between gap-8 sm:flex-row sm:items-end">
-          <div data-reveal className="max-w-md">
-            <TechnicalLabel tone="brand" rule>
-              End of sheet
-            </TechnicalLabel>
-            <p className="mt-4 font-display text-heading-lg font-semibold text-balance text-ink">Thanks for reading the drawing.</p>
-          </div>
+        <Reveal className="flex items-center justify-between gap-8">
+          <TechnicalLabel data-reveal="fade">Elsewhere</TechnicalLabel>
 
-          <ul data-reveal style={stagger(1)} className="flex flex-wrap gap-x-6 gap-y-2">
+          <ul data-reveal style={stagger(1)} className="flex flex-wrap justify-end gap-x-6 gap-y-2">
             {links.map((link) => (
               <li key={link.href}>
                 <a
@@ -75,7 +70,7 @@ export function SiteFooter() {
           <span className="font-mono text-label uppercase text-ink-faint">
             © {new Date().getFullYear()} {profile.name}
           </span>
-          <a href="#home" className="glyph-trigger group inline-flex items-center gap-2 font-mono text-label uppercase text-ink-muted transition-colors hover:text-brand">
+          <a href="#" className="glyph-trigger group inline-flex items-center gap-2 font-mono text-label uppercase text-ink-muted transition-colors hover:text-brand">
             Back to top
             <PixelGlyph name="arrowDown" px={2} className="rotate-180 transition-transform duration-150 group-hover:-translate-y-0.5" />
           </a>

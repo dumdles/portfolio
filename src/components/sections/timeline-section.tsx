@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { Chip, DraftingSheet, Reveal, SectionHeader, TechnicalLabel, stagger } from "@/components/primitives";
 import { involvementLabels, timelineSorted, tracks, type Involvement, type TimelineEntry, type TimelineTrack } from "@/content/timeline";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
@@ -85,6 +87,12 @@ function Entry({ entry }: { entry: TimelineEntry }) {
           </p>
         )}
         {entry.detail && <p className="mt-2 max-w-prose text-body-sm text-pretty text-ink-muted">{entry.detail}</p>}
+        {entry.href && (
+          <Link href={entry.href} className="mt-2 inline-flex items-center gap-1 font-mono text-label uppercase text-brand underline-offset-4 hover:underline">
+            Read the case study
+            <ArrowUpRight className="size-3" aria-hidden />
+          </Link>
+        )}
       </div>
 
       <p data-reveal="fade" className="order-first shrink-0 font-mono text-caption tabular-nums text-ink-faint sm:order-none sm:pt-1.5 sm:text-right">
@@ -154,8 +162,8 @@ export function TimelineSection() {
         part="03"
         eyebrow="Timeline"
         className="mb-8"
-        title="How I got here"
-        lead="School, work and service on one spine, with what I actually did at each. They overlap more than separate lists would suggest."
+        title="School, work and service"
+        lead="Newest first. Under each school are the clubs and roles I held there."
       />
 
       <Reveal className="mb-2 flex flex-wrap items-center gap-2">

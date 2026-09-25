@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Annotation, DecodeText, DimensionLine, PixelGlyph, TechnicalLabel, TitleBlock } from "@/components/primitives";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { profile } from "@/content/profile";
+import type { GlyphName } from "@/lib/pixel/glyphs";
 
 /**
  * 00 — Index.
@@ -16,37 +17,43 @@ import { profile } from "@/content/profile";
  *    80 ms   name slides up out of its mask, a line at a time
  *   220 ms   the portrait is scanned in, top to bottom
  *   300 ms   positioning line rises
- *   560 ms   design, build, break: each verb's glyph assembles in turn
- *   480 ms   title block rises; its labels lock on one after another
+ *   560 ms   each verb's glyph assembles in turn
+ *   480 ms   title block rises; its labels lock on one after another,
+ *            and the discipline legend's glyphs assemble
  *   980 ms   crop marks snap to the portrait's corners
  *  1100 ms   scroll cue bobs three times, then rests
  *
  * All of it is CSS keyed off first paint, so it does not wait for
- * JavaScript. JavaScript adds only what needs a pointer or a clock: the
- * crosshair over the portrait, the live local time, the scroll parallax.
+ * JavaScript. JavaScript adds only what needs a pointer or the scroll position:
+ * the crosshair over the portrait and the scroll parallax.
  */
 
 const ms = (value: number) => ({ "--delay": `${value}ms` }) as React.CSSProperties;
 
-/** Singapore time, to the minute. Rendered client-side only, so the server
- *  never has to guess a time zone. */
-function LocalTime() {
-  const [time, setTime] = useState<string | null>(null);
+const disciplineAccent = { design: "var(--design)", build: "var(--build)", break: "var(--break)" } as const;
 
-  useEffect(() => {
-    const format = new Intl.DateTimeFormat("en-SG", { timeZone: "Asia/Singapore", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
-    const update = () => setTime(format.format(new Date()));
-    update();
-    const id = window.setInterval(update, 15_000);
-    return () => window.clearInterval(id);
-  }, []);
+/** The padlock opens once; everything else loops while hovered. */
+const hoverFor = (name: GlyphName) => (name === "break" ? "swap" : "loop");
 
+/** The title block's last field: one glyph per discipline, each awake on hover. */
+function DisciplineLegend() {
   return (
-    <TechnicalLabel className="shrink-0">
-      <span aria-hidden className="size-1.5 rounded-full bg-positive" />
-      <span>SGT</span>
-      <span className="tabular-nums text-ink">{time ?? "--:--"}</span>
-    </TechnicalLabel>
+    <span className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+      {profile.disciplines.map((discipline, i) => (
+        <span key={discipline.id} className="glyph-trigger inline-flex items-center gap-1.5">
+          <PixelGlyph
+            name={discipline.id}
+            px={2}
+            accent={disciplineAccent[discipline.id]}
+            hover={hoverFor(discipline.id)}
+            assemble="intro"
+            delay={960 + i * 120}
+            step={12}
+          />
+          {discipline.label}
+        </span>
+      ))}
+    </span>
   );
 }
 
@@ -150,9 +157,6 @@ export function HeroSection() {
             <DecodeText text="Index" start delay={60} />
           </TechnicalLabel>
           <span aria-hidden className="intro-draw-x h-px flex-1 bg-rule" style={ms(120)} />
-          <div className="intro-fade" style={ms(400)}>
-            <LocalTime />
-          </div>
         </div>
 
         <div className="mt-10 grid items-center gap-14 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
@@ -191,8 +195,8 @@ export function HeroSection() {
                       assemble="intro"
                       delay={560 + order * 160}
                       step={14}
-                      hover={part.glyph === "break" ? "swap" : "loop"}
-                      className="-translate-y-[0.08em] self-center text-ink"
+                      hover={hoverFor(part.glyph)}
+                      className="self-center text-ink"
                     />
                   </span>
                 );
@@ -204,7 +208,7 @@ export function HeroSection() {
             </p>
 
             <div className="intro-rise" style={ms(480)}>
-              <TitleBlock fields={[...profile.titleBlock]} decode decodeDelay={620} className="max-w-xl" />
+              <TitleBlock fields={[...profile.titleBlock, { label: "Works in", value: <DisciplineLegend /> }]} decode decodeDelay={620} className="max-w-xl" />
             </div>
           </div>
 

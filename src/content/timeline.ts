@@ -55,6 +55,8 @@ export interface TimelineEntry {
   period: string;
   /** Marks the entry as current; renders a live marker. */
   current?: boolean;
+  /** A case study about work done here. */
+  href?: string;
   /** What happened here beyond the headline. Schools mostly. */
   involvements?: Involvement[];
 }
@@ -74,7 +76,7 @@ export const timeline: TimelineEntry[] = [
     org: "Singapore Armed Forces",
     role: "C4X Expert",
     start: "2025-09",
-    period: "Sep 2025 — Present",
+    period: "Sep 2025 – Present",
     current: true,
   },
 
@@ -84,9 +86,10 @@ export const timeline: TimelineEntry[] = [
     track: "work",
     title: "AC Tesla Pte Ltd",
     role: "Full Stack Developer Intern",
-    detail: "System architecture, full stack development and cloud infrastructure.",
+    detail: "Worked on RMAP, the company's inspection reporting system: its first version, its iPad app and its API.",
+    href: "/projects/rmap",
     start: "2022-06",
-    period: "Jun 2022 — Sep 2025",
+    period: "Jun 2022 – Sep 2025",
   },
   {
     id: "giant",
@@ -94,7 +97,7 @@ export const timeline: TimelineEntry[] = [
     title: "Giant",
     role: "Retail Assistant",
     start: "2021-12",
-    period: "Dec 2021 — Mar 2022",
+    period: "Dec 2021 – Mar 2022",
   },
   {
     id: "mcdonalds",
@@ -114,10 +117,10 @@ export const timeline: TimelineEntry[] = [
     role: "Diploma in Computer Engineering",
     detail: "With a Certificate in Design & Media.",
     start: "2022-04",
-    period: "2022 — 2025",
+    period: "2022–2025",
     involvements: [
-      { kind: "leadership", title: "SP Infocomm Club", role: "Programme Head", period: "2024 — 2025" },
-      { kind: "leadership", title: "Electrical and Electronic Engineering Club", role: "Publications Secretary", period: "2023 — 2024" },
+      { kind: "leadership", title: "SP Infocomm Club", role: "Programme Head", period: "2024–2025" },
+      { kind: "leadership", title: "Electrical and Electronic Engineering Club", role: "Publications Secretary", period: "2023–2024" },
       // TODO: final-year project, awards, competitions, other clubs.
     ],
   },
@@ -128,9 +131,9 @@ export const timeline: TimelineEntry[] = [
     role: "GCE 'O' Levels",
     detail: "Design Studies as an applied subject.",
     start: "2018-01",
-    period: "2018 — 2021",
+    period: "2018–2021",
     involvements: [
-      { kind: "cca", title: "Robotics@APEX", role: "Logistics Head", period: "2020 — 2021" },
+      { kind: "cca", title: "Robotics@APEX", role: "Logistics Head", period: "2020–2021" },
       { kind: "leadership", title: "Class Committee", role: "Vice-Chairperson", period: "2021" },
       // TODO: competitions, awards, other roles.
     ],
@@ -141,7 +144,7 @@ export const timeline: TimelineEntry[] = [
     title: "Horizon Primary School",
     role: "PSLE",
     start: "2012-01",
-    period: "2012 — 2017",
+    period: "2012–2017",
     // TODO: CCA and any roles.
   },
 ];

@@ -1,21 +1,28 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { PixelGlyph } from "@/components/primitives";
 import { cn } from "@/lib/utils";
 
-// Order and ids follow the section part numbers in docs/PLAN.md.
+// Order and ids follow the section part numbers in docs/PLAN.md. Links are
+// rooted at "/" so they also work from a project page; on the home page the
+// browser treats them as same-page jumps.
 const navLinks = [
-  { href: "#home", label: "Index" },
-  { href: "#works", label: "Works" },
-  { href: "#timeline", label: "Timeline" },
-  { href: "#hobbies", label: "Off the clock" },
-  { href: "#contact", label: "Contact" },
+  { id: "home", label: "Index" },
+  { id: "works", label: "Works" },
+  { id: "timeline", label: "Timeline" },
+  { id: "hobbies", label: "Off the clock" },
+  { id: "contact", label: "Contact" },
 ];
 
 export default function Navbar() {
-  const [activeSection, setActiveSection] = useState("home");
+  const pathname = usePathname();
+  const onHome = pathname === "/";
+  // Inside a project page, the project belongs to Works.
+  const [activeSection, setActiveSection] = useState(onHome ? "home" : "works");
   const [isScrolled, setIsScrolled] = useState(false);
   const bubbleRef = useRef<HTMLDivElement>(null);
   const linksContainerRef = useRef<HTMLDivElement>(null);
@@ -46,7 +53,8 @@ export default function Navbar() {
   // reading offsetTop for every section on every scroll event, which forced a
   // synchronous layout each time.
   useEffect(() => {
-    const sections = navLinks.map((link) => document.getElementById(link.href.slice(1))).filter((section): section is HTMLElement => section !== null);
+    if (!onHome) return;
+    const sections = navLinks.map((link) => document.getElementById(link.id)).filter((section): section is HTMLElement => section !== null);
 
     if (sections.length === 0) return;
 
@@ -65,7 +73,7 @@ export default function Navbar() {
 
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
-  }, []);
+  }, [onHome]);
 
   // Slide the bubble to the active link.
   useEffect(() => {
@@ -73,7 +81,7 @@ export default function Navbar() {
     const bubble = bubbleRef.current;
     if (!container || !bubble) return;
 
-    const activeLink = container.querySelector(`[data-href="#${activeSection}"]`);
+    const activeLink = container.querySelector(`[data-id="${activeSection}"]`);
     if (!(activeLink instanceof HTMLElement)) return;
 
     bubble.style.width = `${activeLink.offsetWidth}px`;
@@ -96,11 +104,11 @@ export default function Navbar() {
           first, the link row spanning the full width on the second. Squeezing
           six links into the gap beside the toggle clipped them mid-word. */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 md:flex-nowrap md:justify-between">
-        <a href="#home" className="glyph-trigger order-1 mr-auto inline-flex shrink-0 items-center gap-2.5 font-display text-heading-sm font-bold text-ink md:mr-0">
+        <Link href="/#home" className="glyph-trigger order-1 mr-auto inline-flex shrink-0 items-center gap-2.5 font-display text-heading-sm font-bold text-ink md:mr-0">
           {/* The site mark. Its cursor blinks while hovered. */}
           <PixelGlyph name="monogram" px={3} hover="loop" />
           dumdles
-        </a>
+        </Link>
 
         {/* The link row scrolls on narrow screens. The mask fades the right
             edge so a clipped link reads as "there is more", rather than as a
@@ -116,18 +124,18 @@ export default function Navbar() {
           <div ref={bubbleRef} aria-hidden className="absolute inset-y-0 -z-10 rounded-md bg-brand-soft transition-transform duration-500 ease-[var(--ease-drafting)]" style={{ width: 0 }} />
 
           {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              data-href={link.href}
-              aria-current={activeSection === link.href.slice(1) ? "true" : undefined}
+            <Link
+              key={link.id}
+              href={`/#${link.id}`}
+              data-id={link.id}
+              aria-current={activeSection === link.id ? "true" : undefined}
               className={cn(
                 "relative z-10 shrink-0 rounded-md px-3 py-1.5 text-body-sm font-medium transition-colors duration-200",
-                activeSection === link.href.slice(1) ? "text-brand" : "text-ink-muted hover:text-ink"
+                activeSection === link.id ? "text-brand" : "text-ink-muted hover:text-ink"
               )}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </div>
 

@@ -31,10 +31,11 @@ const SITE_URL = "https://dumdles.com";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Dylan Chong — Design, Engineering, Security",
-    template: "%s — Dylan Chong",
+    default: "Dylan Chong",
+    template: "%s · Dylan Chong",
   },
-  description: "Portfolio of Dylan Chong. I design interfaces, build software, and study how both break.",
+  description:
+    "Dylan Chong designs interfaces and writes software in Singapore. Case studies include RMAP, the inspection reporting system he built with the team at AC Tesla.",
   keywords: ["Dylan Chong", "portfolio", "UI design", "graphic design", "software development", "cybersecurity", "Singapore"],
   authors: [{ name: "Dylan Chong", url: SITE_URL }],
   creator: "Dylan Chong",
@@ -43,13 +44,15 @@ export const metadata: Metadata = {
     locale: "en_SG",
     url: SITE_URL,
     siteName: "Dylan Chong",
-    title: "Dylan Chong — Design, Engineering, Security",
-    description: "Portfolio of Dylan Chong. I design interfaces, build software, and study how both break.",
+    title: "Dylan Chong",
+    description:
+      "Dylan Chong designs interfaces and writes software in Singapore. Case studies include RMAP, the inspection reporting system he built with the team at AC Tesla.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Dylan Chong — Design, Engineering, Security",
-    description: "Portfolio of Dylan Chong. I design interfaces, build software, and study how both break.",
+    title: "Dylan Chong",
+    description:
+      "Dylan Chong designs interfaces and writes software in Singapore. Case studies include RMAP, the inspection reporting system he built with the team at AC Tesla.",
   },
   robots: {
     index: true,

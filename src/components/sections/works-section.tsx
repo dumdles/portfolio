@@ -40,7 +40,7 @@ function Watermark({ project }: { project: Project }) {
       delay={220}
       step={12}
       className={cn(
-        "pointer-events-none absolute bottom-4 right-4 text-ink-faint transition-opacity duration-200",
+        "pointer-events-none absolute bottom-4 right-4 z-10 text-ink-faint transition-opacity duration-200",
         project.placeholder ? "opacity-35 group-hover/tile:opacity-60" : "opacity-40 group-hover/tile:opacity-90"
       )}
     />
@@ -60,8 +60,18 @@ function ProjectTile({ project, index }: { project: Project; index: number }) {
       </div>
 
       <div className="relative z-10 mt-auto flex flex-col gap-3 pt-8 pr-10">
-        <h3 className={cn("font-display font-semibold text-ink", project.size === "lg" ? "text-heading-lg" : "text-heading")}>{project.title}</h3>
-        <p className="max-w-prose text-body-sm text-pretty text-ink-muted">{project.summary}</p>
+        <h3 className={cn("font-display font-semibold text-ink", project.size === "lg" ? "text-heading-lg" : "text-heading")}>
+          {project.href ? (
+            // The title link stretches over the whole card, so the tile is one
+            // target without nesting other links inside an anchor.
+            <Link href={project.href} className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none">
+              {project.title}
+            </Link>
+          ) : (
+            project.title
+          )}
+        </h3>
+        {project.summary && <p className="max-w-prose text-body-sm text-pretty text-ink-muted">{project.summary}</p>}
 
         {project.stack && (
           <ul className="flex flex-wrap gap-x-3 gap-y-1">
@@ -73,8 +83,15 @@ function ProjectTile({ project, index }: { project: Project; index: number }) {
           </ul>
         )}
 
+        {project.href && (
+          <span className="mt-1 inline-flex items-center gap-1 font-mono text-label uppercase text-brand">
+            Case study
+            <ArrowUpRight className="size-3 transition-transform duration-150 group-hover/tile:-translate-y-0.5 group-hover/tile:translate-x-0.5" aria-hidden />
+          </span>
+        )}
+
         {project.links && (
-          <ul className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+          <ul className="relative z-20 mt-1 flex flex-wrap gap-x-4 gap-y-1">
             {project.links.map((link) => (
               <li key={link.href}>
                 <Link
@@ -107,27 +124,27 @@ function ProjectTile({ project, index }: { project: Project; index: number }) {
     );
   }
 
+  // The watermark is a sibling of the card, not a child. A tilting card is
+  // flattened into a bitmap and warped in 3D, which smears pixel art; out
+  // here the glyph stays on the screen's pixel grid while the card moves
+  // beneath it.
   return (
-    <BentoItem size={project.size} data-reveal style={stagger(index)}>
-      <TiltCard className="glyph-trigger group/tile flex h-full flex-col p-5 sm:p-6">
-        {body}
-        <Watermark project={project} />
-      </TiltCard>
+    <BentoItem size={project.size} data-reveal style={stagger(index)} className="glyph-trigger group/tile relative">
+      <TiltCard className="flex h-full flex-col p-5 sm:p-6">{body}</TiltCard>
+      <Watermark project={project} />
     </BentoItem>
   );
 }
 
 export function WorksSection() {
-  const filled = projects.filter((project) => !project.placeholder).length;
-
   return (
     <DraftingSheet id="works" grid="none">
       <SectionHeader
         part="01"
         eyebrow="Selected works"
         className="mb-10"
-        title="Things I have designed, built and broken"
-        lead="Tile size is a judgement about what is worth your time, not a layout accident. Markers show which of the three disciplines each piece belongs to."
+        title="Selected work"
+        lead="Only RMAP has a full write-up so far. The dashed frames are placeholders."
       />
 
       <Reveal>
@@ -138,9 +155,6 @@ export function WorksSection() {
         </BentoGrid>
       </Reveal>
 
-      <p className="mt-6 font-mono text-label uppercase text-ink-faint">
-        {filled} of {projects.length} slots filled
-      </p>
     </DraftingSheet>
   );
 }

@@ -2,7 +2,7 @@
  * The works index.
  *
  * ────────────────────────────────────────────────────────────────────────
- *  TO FILL IN: only the first entry is real. The rest are empty slots.
+ *  TO FILL IN: the first two entries are real. The rest are empty slots.
  *
  *  They are deliberately labelled as placeholders rather than filled with
  *  invented projects, because a portfolio that describes work that does not
@@ -39,57 +39,35 @@ export interface Project {
   links?: { label: string; href: string }[];
   /** An unfilled slot. Renders as a dashed outline instead of a card. */
   placeholder?: boolean;
+  /** A case study page. Makes the whole tile a link. */
+  href?: string;
 }
 
 export const projects: Project[] = [
   {
+    id: "rmap",
+    title: "RMAP",
+    summary:
+      "Inspection reporting for AC Tesla's thermal scanning work: a web portal, an offline iPad app and the API between them. I wrote the first version on my own.",
+    disciplines: ["build", "design", "break"],
+    year: "2024–2026",
+    size: "lg",
+    stack: ["Next.js", "PHP", "Flutter", "AWS"],
+    href: "/projects/rmap",
+  },
+  {
     id: "portfolio",
     title: "This site",
-    summary:
-      "A portfolio built as an annotated technical drawing, with a documented design system behind it rather than a pile of one-off styles.",
+    summary: "Next.js, with a documented design system, hand-drawn pixel glyphs and a 5×7 typeface.",
     disciplines: ["design", "build"],
     year: "2026",
-    size: "lg",
-    stack: ["Next.js", "TypeScript", "Tailwind v4"],
+    size: "sm",
     links: [
       { label: "Source", href: "https://github.com/dumdles/portfolio" },
       { label: "Styleguide", href: "/styleguide" },
     ],
   },
-  {
-    id: "slot-2",
-    title: "Open slot",
-    summary: "A build project. Something you shipped, and what it had to get right.",
-    disciplines: ["build"],
-    year: "—",
-    size: "sm",
-    placeholder: true,
-  },
-  {
-    id: "slot-3",
-    title: "Open slot",
-    summary: "A security project. A CTF writeup, a disclosure, or a tool you wrote.",
-    disciplines: ["break"],
-    year: "—",
-    size: "tall",
-    placeholder: true,
-  },
-  {
-    id: "slot-4",
-    title: "Open slot",
-    summary: "A design project. An interface, an identity, or a publication.",
-    disciplines: ["design"],
-    year: "—",
-    size: "sm",
-    placeholder: true,
-  },
-  {
-    id: "slot-5",
-    title: "Open slot",
-    summary: "Anything that does not fit the three above.",
-    disciplines: ["build", "break"],
-    year: "—",
-    size: "wide",
-    placeholder: true,
-  },
+  { id: "slot-3", title: "Reserved", summary: "", disciplines: ["break"], year: "", size: "tall", placeholder: true },
+  { id: "slot-4", title: "Reserved", summary: "", disciplines: ["design"], year: "", size: "sm", placeholder: true },
+  { id: "slot-5", title: "Reserved", summary: "", disciplines: ["build"], year: "", size: "wide", placeholder: true },
 ];

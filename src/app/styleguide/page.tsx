@@ -116,7 +116,7 @@ export default function StyleguidePage() {
           part="00"
           eyebrow="Reference"
           title="The drawing set"
-          lead="Every token and primitive in the system, rendered together so they can be judged against each other rather than in isolation. Switch the theme from the header; everything on this page responds live."
+          lead="Every token and primitive in the system on one page, in both themes. The theme switch is in the header."
           className="mb-4"
         />
 
@@ -197,7 +197,7 @@ export default function StyleguidePage() {
             </div>
           </Block>
 
-          <Block part="03" name="Surface and depth" description="Radii stay small so corners read as machined rather than pillowy. Shadows are tight and cool, like paper lifting off a board.">
+          <Block part="03" name="Surface and depth" description="Radii stay small so corners read as machined. Shadows are tight and slightly cool.">
             {/* Class names are written out in full rather than interpolated:
                 Tailwind scans source text, so a constructed class never makes
                 it into the stylesheet. */}
@@ -232,7 +232,7 @@ export default function StyleguidePage() {
           <Block
             part="04"
             name="Tilt card"
-            description="Point at these with a mouse. The tilt is written straight to the node inside a rAF callback, skips touch pointers entirely, and switches off under prefers-reduced-motion. Tab to the card with a link inside to see the keyboard lift."
+            description="Hover these with a mouse. The tilt is written straight to the node inside a rAF callback, skips touch pointers entirely, and switches off under prefers-reduced-motion. Tab to the card with a link inside to see the keyboard lift."
           >
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
               <TiltCard className="p-6">
@@ -264,7 +264,7 @@ export default function StyleguidePage() {
           <Block
             part="05"
             name="Bento grid"
-            description="Four columns at lg, two at sm, one on phones. Size hierarchy survives the collapse because large tiles keep their height instead of relying on column spans that have nowhere to go."
+            description="Four columns at lg, two at sm, one on phones. Large tiles keep their height when the grid collapses, so the hierarchy survives on a phone."
           >
             <BentoGrid columns={4}>
               <BentoItem size="lg">
@@ -352,14 +352,14 @@ export default function StyleguidePage() {
             </div>
           </Block>
 
-          <Block part="07" name="Section header" description="The standard heading for a top-level section. The part number is what makes the page read as one drawing rather than a stack of unrelated blocks.">
+          <Block part="07" name="Section header" description="The standard heading for a top-level section, with its part number.">
             <div className="grid gap-10 rounded-md border border-rule bg-surface p-6 lg:grid-cols-2">
               <SectionHeader part="02" eyebrow="Selected works" title="Things I have built" lead="Left aligned, the default. Use this everywhere unless the section is deliberately symmetrical." />
               <SectionHeader part="06" eyebrow="Off the clock" align="center" title="What I do otherwise" lead="Centred. Reserve it for closing sections." />
             </div>
           </Block>
 
-          <Block part="08" name="Form controls" description="The shadcn/ui primitives, remapped onto the system tokens so they inherit the theme instead of carrying their own palette.">
+          <Block part="08" name="Form controls" description="The shadcn/ui primitives, remapped onto the system tokens so they follow the theme.">
             <div className="grid gap-6 lg:grid-cols-2">
               <div className="flex flex-col gap-4 rounded-md border border-rule bg-surface p-6">
                 <div className="space-y-1.5">
@@ -434,7 +434,7 @@ export default function StyleguidePage() {
           <Block
             part="11"
             name="Pixel glyphs"
-            description="Drawn by hand on a grid, rendered as crisp squares at whole-pixel scales only. Two tones: ink, and one accent. Frame 0 rests; frame 1 is what the glyph does when hovered. Point at any card."
+            description="Drawn by hand on a grid, rendered as crisp squares at whole-pixel scales only. Two tones: ink, and one accent. Frame 0 rests; frame 1 is what the glyph does when hovered."
           >
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
               {(Object.keys(glyphs) as GlyphName[]).map((name) => {
