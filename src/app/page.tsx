@@ -1,50 +1,34 @@
-"use client";
-
-import React, { useState, useEffect } from "react"; // Import hooks for dynamic behavior
-
-// Import the section components
-import HeroSection from "../components/HeroSection";
-import ExperienceSection from "../components/ExperienceSection";
-import HobbiesSection from "../components/HobbiesSection";
-import ContactSection from "../components/ContactSection";
-import JourneySection from "@/components/JourneySection";
+import { HeroSection } from "@/components/sections/hero-section";
+import { WorksSection } from "@/components/sections/works-section";
+import { TimelineSection } from "@/components/sections/timeline-section";
+import HobbiesSection from "@/components/sections/hobbies-section";
+import ContactSection from "@/components/sections/contact-section";
 import Navbar from "@/components/Navbar";
-import ProjectsSection from "@/components/ProjectsSection";
+import { SiteFooter } from "@/components/sections/site-footer";
 
+/**
+ * The spine of the site, in the order a first-time visitor should meet it.
+ *
+ * Part numbers come from the information architecture in docs/PLAN.md. The
+ * gaps are intentional: 02 Craft, 04 Security and 05 Toolbelt are planned but
+ * not built yet, and renumbering around them now would only mean renumbering
+ * back later.
+ *
+ * This is a server component. Each section opts into the client itself, so
+ * only the interactive parts ship JavaScript.
+ */
 export default function HomePage() {
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  // Effect to handle scroll event for dynamic nav bar
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        // Adjust threshold as needed
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    // Clean up the event listener
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []); // Empty dependency array means this effect runs once on mount
-
   return (
-    <div className="min-h-screen bg-neutral-100 dark:bg-slate-900 text-black flex flex-col">
-      {/* Dynamic Navigation Bar */}
-      {/* Added fixed positioning, background change on scroll */}
+    <div className="flex min-h-screen flex-col bg-paper text-ink">
       <Navbar />
-      {/* Render the section components */}
-      <HeroSection />
-      <JourneySection /> {/* <ProjectsSection /> */}
-      <HobbiesSection /> {/* Render Hobbies Section */}
-      <ExperienceSection /> {/* Render Experience Section */}
-      <ProjectsSection />
-      <ContactSection />
+      <main>
+        <HeroSection />
+        <WorksSection />
+        <TimelineSection />
+        <HobbiesSection />
+        <ContactSection />
+      </main>
+      <SiteFooter />
     </div>
   );
 }

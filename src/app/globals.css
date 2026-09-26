@@ -1,126 +1,977 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+/* ===========================================================================
+   Dark mode variant
+   next-themes sets `class="dark"` on <html>, so match the element itself and
+   any descendant.
+   ========================================================================= */
+@custom-variant dark (&:where(.dark, .dark *));
 
+/* ===========================================================================
+   TOKEN → UTILITY MAPPING
+
+   Everything in this block is what Tailwind turns into utility classes.
+   Each entry points at a plain CSS variable declared further down, which is
+   what lets a single token resolve differently per theme and per accent
+   preset without regenerating utilities.
+
+   Read this block as the public API of the design system. Read the :root and
+   .dark blocks as its values. See docs/DESIGN-SYSTEM.md for the full guide.
+   ========================================================================= */
 @theme inline {
+  /* --- Surfaces: the drafting board ------------------------------------ */
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-sunken: var(--surface-sunken);
+
+  /* --- Ink: everything written on the board ---------------------------- */
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-ink-inverted: var(--ink-inverted);
+
+  /* --- Lines: hairlines, rules, the grid itself ------------------------ */
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-grid: var(--grid);
+
+  /* --- Brand: the single accent ---------------------------------------- */
+  /* Named `brand` rather than `accent` because shadcn/ui already owns
+     `--accent` for its muted hover surfaces. Utilities: bg-brand,
+     text-brand, border-brand. */
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-ink: var(--brand-ink);
+
+  /* --- Status --------------------------------------------------------- */
+  --color-positive: var(--positive);
+  --color-critical: var(--critical);
+
+  /* --- Discipline markers ---------------------------------------------- */
+  /* The three strands of work. Used on project tiles and filter chips so the
+     mix across disciplines is legible without reading a word. */
+  --color-design: var(--design);
+  --color-build: var(--build);
+  --color-break: var(--break);
+
+  /* --- Typefaces -------------------------------------------------------- */
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
+
+  /* --- Type scale ------------------------------------------------------- */
+  /* Display sizes are fluid so headlines stay proportional without a
+     breakpoint at every step. Everything else is fixed. */
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1.2;
+  --text-label--letter-spacing: 0.11em;
+  --text-label--font-weight: 500;
+
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.45;
+
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.6;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.65;
+
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.6;
+
+  --text-heading-sm: 1.25rem;
+  --text-heading-sm--line-height: 1.35;
+  --text-heading-sm--letter-spacing: -0.01em;
+
+  --text-heading: 1.5rem;
+  --text-heading--line-height: 1.3;
+  --text-heading--letter-spacing: -0.015em;
+
+  --text-heading-lg: 2rem;
+  --text-heading-lg--line-height: 1.2;
+  --text-heading-lg--letter-spacing: -0.02em;
+
+  --text-display-sm: clamp(1.875rem, 1.4rem + 2.2vw, 2.5rem);
+  --text-display-sm--line-height: 1.12;
+  --text-display-sm--letter-spacing: -0.025em;
+
+  --text-display: clamp(2.25rem, 1.5rem + 3.6vw, 3.5rem);
+  --text-display--line-height: 1.06;
+  --text-display--letter-spacing: -0.03em;
+
+  --text-display-lg: clamp(2.75rem, 1.4rem + 6.2vw, 4.75rem);
+  --text-display-lg--line-height: 1.02;
+  --text-display-lg--letter-spacing: -0.035em;
+
+  --text-display-xl: clamp(3.25rem, 1rem + 9.5vw, 6.5rem);
+  --text-display-xl--line-height: 0.96;
+  --text-display-xl--letter-spacing: -0.04em;
+
+  /* --- Radii ------------------------------------------------------------ */
+  /* Technical drawing wants corners that read as machined, not pillowy.
+     The old site's rounded-3xl is deliberately absent. */
+  --radius-sharp: 0.125rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 1rem;
+
+  /* --- Elevation -------------------------------------------------------- */
+  /* Paper lifting off a drafting board: tight, low-opacity, slightly cool. */
+  --shadow-lift: 0 1px 2px -1px var(--shadow-tint), 0 2px 6px -2px var(--shadow-tint);
+  --shadow-card: 0 2px 4px -2px var(--shadow-tint), 0 8px 20px -6px var(--shadow-tint);
+  --shadow-pane: 0 4px 10px -4px var(--shadow-tint), 0 24px 48px -12px var(--shadow-tint);
+
+  /* --- Motion ----------------------------------------------------------- */
+  --ease-drafting: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-snap: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* --- shadcn/ui compatibility ------------------------------------------ */
+  /* The ui/ primitives (button, input, label, textarea, separator) read these
+     names. Mapping them onto the tokens above keeps those components in the
+     system instead of drifting out of it. */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-jetbrains-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 }
 
-body {
-  font-family: Inter, Helvetica, sans-serif;
-}
-
+/* ===========================================================================
+   LIGHT THEME — "drafting paper"
+   Warm off-white stock, near-black ink with a faint blue cast, one accent.
+   ========================================================================= */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --grid-unit: 8px;
+  --radius: 0.375rem;
+  --shadow-tint: oklch(0.45 0.03 260 / 0.14);
+
+  /* The laptop frame. A depicted object, so its colours stay close to the
+     real finish in both themes; the dark theme lifts the shell so it still
+     separates from the page. */
+  --device-shell: oklch(0.34 0.006 260);
+  --device-shell-hi: oklch(0.5 0.006 260);
+  --device-bezel: oklch(0.14 0.004 260);
+  --device-screen: oklch(0.19 0.012 258);
+  --device-splash: oklch(0.8 0.1 250);
+
+  /* Surfaces */
+  --paper: oklch(0.977 0.004 85);
+  --surface: oklch(0.995 0.002 85);
+  --surface-muted: oklch(0.955 0.005 85);
+  --surface-sunken: oklch(0.93 0.006 85);
+
+  /* Ink */
+  --ink: oklch(0.205 0.012 260);
+  --ink-muted: oklch(0.505 0.014 260);
+  --ink-faint: oklch(0.675 0.012 260);
+  --ink-inverted: oklch(0.985 0.002 85);
+
+  /* Lines */
+  --rule: oklch(0.885 0.007 260);
+  --rule-strong: oklch(0.785 0.011 260);
+  --grid: oklch(0.925 0.011 245);
+
+  /* Brand — signal blue.
+     A saturated, slightly warm blue rather than the muted cyan of a
+     photographic blueprint. It still reads as drafting ink, but it has
+     enough chroma to work as a signal colour on a single small element. */
+  --brand: oklch(0.525 0.19 258);
+  --brand-soft: oklch(0.938 0.045 258);
+  --brand-strong: oklch(0.445 0.18 260);
+  --brand-ink: oklch(0.99 0.004 258);
+
+  /* Status */
+  --positive: oklch(0.55 0.13 155);
+  --critical: oklch(0.565 0.2 27);
+
+  /* Discipline markers */
+  --design: oklch(0.6 0.17 330);
+  --build: oklch(0.525 0.19 258);
+  --break: oklch(0.6 0.16 55);
+
+  /* shadcn/ui compatibility */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-ink);
+  --secondary: var(--surface-muted);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface-muted);
+  --muted-foreground: var(--ink-muted);
+  --accent: var(--surface-muted);
+  --accent-foreground: var(--ink);
+  --destructive: var(--critical);
+  --border: var(--rule);
+  --input: var(--rule);
+  --ring: var(--brand);
 }
 
+/* ===========================================================================
+   DARK THEME — "CAD viewport"
+   Not an inversion of the light theme. A different material: deep blue-black
+   with the accent reading as emitted light rather than printed ink.
+   ========================================================================= */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --shadow-tint: oklch(0.08 0.02 260 / 0.55);
+
+  --device-shell: oklch(0.4 0.008 260);
+  --device-shell-hi: oklch(0.56 0.008 260);
+  --device-bezel: oklch(0.11 0.004 260);
+  --device-screen: oklch(0.15 0.012 258);
+
+  /* Surfaces */
+  --paper: oklch(0.178 0.017 258);
+  --surface: oklch(0.223 0.019 258);
+  --surface-muted: oklch(0.262 0.019 258);
+  --surface-sunken: oklch(0.145 0.016 258);
+
+  /* Ink */
+  --ink: oklch(0.962 0.005 250);
+  --ink-muted: oklch(0.725 0.013 250);
+  --ink-faint: oklch(0.555 0.015 252);
+  --ink-inverted: oklch(0.16 0.018 258);
+
+  /* Lines */
+  --rule: oklch(0.335 0.018 256);
+  --rule-strong: oklch(0.445 0.021 256);
+  --grid: oklch(0.272 0.021 250);
+
+  /* Brand — the same signal blue, lifted so it reads as emitted light
+     rather than paint. Chroma stays high; on a dark ground a desaturated
+     blue goes grey and stops signalling anything. */
+  --brand: oklch(0.7 0.175 256);
+  --brand-soft: oklch(0.305 0.08 258);
+  --brand-strong: oklch(0.785 0.15 252);
+  --brand-ink: oklch(0.155 0.03 258);
+
+  /* Status */
+  --positive: oklch(0.72 0.15 158);
+  --critical: oklch(0.705 0.185 22);
+
+  /* Discipline markers */
+  --design: oklch(0.74 0.15 330);
+  --build: oklch(0.7 0.175 256);
+  --break: oklch(0.765 0.145 60);
 }
 
+/* ===========================================================================
+   BASE
+   ========================================================================= */
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-rule;
   }
+
+  html {
+    scroll-behavior: smooth;
+    /* Sections are anchored; keep the fixed navbar from covering headings. */
+    scroll-padding-top: 6rem;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-paper text-ink font-sans antialiased;
+    font-size: var(--text-body);
+    line-height: 1.65;
+  }
+
+  /* One visible focus treatment everywhere, keyboard-only. */
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  ::selection {
+    background: var(--brand);
+    color: var(--brand-ink);
+  }
+
+  /* Tabular figures for dates, measurements and part numbers. */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ===========================================================================
+   UTILITIES
+   ========================================================================= */
+@layer utilities {
+  /* The drafting grid. Sits under content at low contrast; the 8px minor grid
+     is overlaid by a 5x major grid so the sheet reads as measured rather than
+     as generic graph paper. */
+  .drafting-grid {
+    background-image: linear-gradient(to right, var(--grid) 1px, transparent 1px), linear-gradient(to bottom, var(--grid) 1px, transparent 1px),
+      linear-gradient(to right, var(--grid) 1px, transparent 1px), linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+    background-size:
+      calc(var(--grid-unit) * 5) calc(var(--grid-unit) * 5),
+      calc(var(--grid-unit) * 5) calc(var(--grid-unit) * 5),
+      var(--grid-unit) var(--grid-unit),
+      var(--grid-unit) var(--grid-unit);
+    background-position: -1px -1px;
+  }
+
+  /* Minor grid only, for small panes where the major grid is too busy. */
+  .drafting-grid-fine {
+    background-image: linear-gradient(to right, var(--grid) 1px, transparent 1px), linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+    background-size: var(--grid-unit) var(--grid-unit);
+    background-position: -1px -1px;
+  }
+
+  /* Hairline rule that stays 1 device pixel on high-DPI screens. */
+  .rule-hairline {
+    border-width: 0;
+    border-bottom-width: 1px;
+    border-color: var(--rule);
+  }
+
+  /* Standard label treatment: mono, uppercase, wide tracking, muted. */
+  .label-technical {
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+}
+
+/* ===========================================================================
+   MOTION
+
+   The rules, in order of importance:
+
+   1. Motion is short. Nothing that responds to the visitor takes longer than
+      --dur-base. Only one-time entrances are allowed --dur-slow.
+   2. Motion happens once. Entrances play when a thing first comes into view
+      and never again. The only loops on the site run while a pointer is
+      resting on the thing that loops.
+   3. Pixel things move in steps; drawn things move in curves. Pixel glyphs
+      and pixel type use steps() timing so they snap like sprites. Lines,
+      cards and type use --ease-out-expo so they land hard and settle.
+   4. The OS setting wins. prefers-reduced-motion shows the final state of
+      everything immediately, with no exceptions.
+   ========================================================================= */
+:root {
+  --dur-snap: 140ms;
+  --dur-quick: 260ms;
+  --dur-base: 440ms;
+  --dur-slow: 780ms;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-crisp: cubic-bezier(0.65, 0, 0.35, 1);
+  --stagger: 70ms;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* A line of display type slides up out of a mask, the way a sheet is fed
+   through a plotter. Pair with an overflow-clipped parent. */
+@keyframes mask-rise {
+  from {
+    transform: translate3d(0, 105%, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes draw-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes draw-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* A pixel lands. Three steps, so it reads as a sprite frame change rather
+   than as a smooth scale. */
+@keyframes pixel-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.25);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* A pixel falls three grid cells into place, one cell per step. */
+@keyframes pixel-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes scan-reveal {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes scan-line {
+  0% {
+    top: 0%;
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes snap-in {
+  from {
+    opacity: 0;
+    transform: translate(var(--snap-x, 0), var(--snap-y, 0));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}
+
+@keyframes frame-a {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes frame-b {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* --- Scroll-triggered reveals --------------------------------------------
+
+   An inline script in layout.tsx sets data-js on <html> before first paint.
+   Everything that waits for the viewport is only hidden when that attribute
+   exists, so with JavaScript off, or before it loads, the page is simply
+   static and fully legible. Nothing is ever hidden by a stylesheet alone. */
+html[data-js] [data-reveal] {
+  opacity: 0;
+}
+
+html[data-js] [data-inview][data-reveal],
+html[data-js] [data-inview] [data-reveal] {
+  animation: rise var(--dur-base) var(--ease-out-expo) both;
+  animation-delay: calc(var(--i, 0) * var(--stagger) + var(--delay, 0ms));
+}
+
+html[data-js] [data-inview][data-reveal="fade"],
+html[data-js] [data-inview] [data-reveal="fade"] {
+  animation-name: fade;
+}
+
+/* Rules and spines that draw themselves in. */
+html[data-js] [data-draw] {
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+html[data-js] [data-inview][data-draw],
+html[data-js] [data-inview] [data-draw] {
+  animation: draw-x var(--dur-slow) var(--ease-out-expo) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+/* --- Load choreography ---------------------------------------------------
+
+   The hero plays on first paint without waiting for hydration, so its
+   timing is pure CSS. Each element sets its own --delay. */
+.intro-rise {
+  animation: rise var(--dur-base) var(--ease-out-expo) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.intro-mask-rise {
+  animation: mask-rise var(--dur-slow) var(--ease-out-expo) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.intro-fade {
+  animation: fade var(--dur-base) var(--ease-out-expo) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.intro-draw-x {
+  transform-origin: left center;
+  animation: draw-x var(--dur-slow) var(--ease-out-expo) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.intro-draw-y {
+  transform-origin: center top;
+  animation: draw-y var(--dur-slow) var(--ease-out-expo) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.intro-scan {
+  animation: scan-reveal var(--dur-slow) var(--ease-in-out-crisp) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.intro-scanline {
+  animation: scan-line var(--dur-slow) var(--ease-in-out-crisp) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.intro-snap {
+  animation: snap-in var(--dur-quick) var(--ease-out-expo) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+/* --- Pixel glyphs ---------------------------------------------------------- */
+.pixel-glyph {
+  shape-rendering: crispEdges;
+  overflow: visible;
+}
+
+.pixel-glyph rect {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Frames beyond the first are hidden until something asks for them. */
+.pixel-glyph [data-frame]:not([data-frame="0"]) {
+  display: none;
+}
+
+/* Assemble: pixels land in a diagonal sweep, like a print head passing. */
+html[data-js] .pixel-glyph[data-assemble] rect {
+  opacity: 0;
+}
+
+html[data-js] .pixel-glyph[data-assemble][data-inview] rect,
+.pixel-glyph[data-assemble="intro"] rect {
+  animation: pixel-pop var(--dur-quick) steps(3, end) both;
+  animation-delay: calc(var(--pd, 0ms) + var(--glyph-delay, 0ms));
+}
+
+/* Hover behaviour is declared on the glyph, triggered by whichever ancestor
+   carries .glyph-trigger, so a whole card or word can wake its glyph. */
+.glyph-trigger:is(:hover, :focus-visible, :focus-within) .pixel-glyph[data-hover="swap"] [data-frame="0"] {
+  display: none;
+}
+
+.glyph-trigger:is(:hover, :focus-visible, :focus-within) .pixel-glyph[data-hover="swap"] [data-frame="1"] {
+  display: inline;
+}
+
+.glyph-trigger:is(:hover, :focus-visible, :focus-within) .pixel-glyph[data-hover="loop"] [data-frame="0"] {
+  animation: frame-a 380ms steps(1, end) infinite;
+}
+
+.glyph-trigger:is(:hover, :focus-visible, :focus-within) .pixel-glyph[data-hover="loop"] [data-frame="1"] {
+  display: inline;
+  animation: frame-b 380ms steps(1, end) infinite;
+}
+
+/* --- Pixel type ------------------------------------------------------------ */
+.pixel-text {
+  shape-rendering: crispEdges;
+  overflow: visible;
+}
+
+.pixel-text rect {
+  transform-box: fill-box;
+  transition: fill var(--dur-snap) linear;
+}
+
+.pixel-text rect[data-hot] {
+  fill: var(--brand);
+}
+
+html[data-js] .pixel-text[data-drop] rect {
+  opacity: 0;
+}
+
+html[data-js] .pixel-text[data-drop][data-inview] rect {
+  animation: pixel-drop var(--dur-base) steps(3, end) both;
+  animation-delay: var(--pd, 0ms);
+}
+
+/* --- Stepped photo wipe ---------------------------------------------------
+
+   A photograph revealed in six hard steps from the bottom, like a slow
+   raster, rather than a smooth fade. On touch screens there is no hover to
+   wait for, so the photo is simply shown. */
+.photo-wipe {
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 360ms steps(6, end);
+}
+
+.group:is(:hover, :focus-within) .photo-wipe {
+  clip-path: inset(0 0 0 0);
+}
+
+@media (hover: none) {
+  .photo-wipe {
+    clip-path: none;
+  }
+}
+
+/* --- System diagrams -------------------------------------------------------
+
+   Connections plot themselves in on first view, in the order a request
+   travels. pathLength="1" on each path makes a dash of 1 exactly its full
+   length, so one keyframe draws any path regardless of its real length. */
+@keyframes draw-path {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.sd-edge {
+  fill: none;
+  stroke: var(--rule-strong);
+  stroke-width: 1.25;
+  stroke-dasharray: 1;
+  transition:
+    stroke var(--dur-snap) linear,
+    stroke-width var(--dur-snap) linear;
+}
+
+.sd-edge.is-on {
+  stroke: var(--brand);
+  stroke-width: 2;
+}
+
+.sd-arrow {
+  fill: var(--rule-strong);
+  transition: fill var(--dur-snap) linear;
+}
+
+.sd-arrow.is-on {
+  fill: var(--brand);
+}
+
+/* Dimming sits on an outer group; entrances animate an inner one. An
+   entrance that animates opacity would otherwise pin it and override the
+   dim once the animation holds its final frame. */
+.sd-link,
+.sd-node {
+  transition: opacity var(--dur-snap) linear;
+}
+
+.sd-link.is-dim {
+  opacity: 0.18;
+}
+
+.sd-node {
+  cursor: pointer;
+}
+
+.sd-node.is-dim {
+  opacity: 0.35;
+}
+
+.sd-box {
+  transition: stroke var(--dur-snap) linear;
+}
+
+html[data-js] .sd-edge {
+  stroke-dashoffset: 1;
+}
+
+html[data-js] [data-inview] .sd-edge {
+  animation: draw-path 560ms var(--ease-out-expo) both;
+  animation-delay: var(--d, 0ms);
+}
+
+html[data-js] .sd-fade {
+  opacity: 0;
+}
+
+html[data-js] [data-inview] .sd-fade {
+  animation: fade var(--dur-base) var(--ease-out-expo) both;
+  animation-delay: var(--d, 0ms);
+}
+
+/* --- Laptop frame -----------------------------------------------------------
+
+   The lid hinges on its bottom edge and swings up once, on first view. At
+   rest it has no transform, so a screenshot on it is not resampled. */
+.laptop {
+  position: relative;
+}
+
+.laptop-stage {
+  width: 86%;
+  margin-inline: auto;
+  perspective: 1800px;
+  perspective-origin: 50% 30%;
+}
+
+.laptop-lid {
+  transform-origin: 50% 100%;
+  padding: 1.6% 1.6% 2.8%;
+  border-radius: 2.4% 2.4% 0.5% 0.5% / 3.6% 3.6% 0.8% 0.8%;
+  background: var(--device-bezel);
+  box-shadow:
+    inset 0 0 0 1.5px var(--device-shell-hi),
+    0 40px 60px -40px var(--shadow-tint);
+}
+
+.laptop-screen {
+  position: relative;
+  aspect-ratio: 3024 / 1964;
+  overflow: hidden;
+  border-radius: 1% / 1.5%;
+  background: var(--device-screen);
+}
+
+.laptop-notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 10.5%;
+  height: 3.2%;
+  translate: -50% 0;
+  border-radius: 0 0 18% 18% / 0 0 45% 45%;
+  background: var(--device-bezel);
+}
+
+.laptop-splash {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background-image:
+    linear-gradient(to right, color-mix(in oklch, var(--device-splash) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklch, var(--device-splash) 7%, transparent) 1px, transparent 1px);
+  background-size: 3.125% 4.8%;
+}
+
+.laptop-base {
+  position: relative;
+  height: 0;
+  padding-bottom: 2.2%;
+  border-radius: 0.3% 0.3% 4% 4% / 8% 8% 100% 100%;
+  background: linear-gradient(
+    to bottom,
+    var(--device-shell-hi) 0,
+    var(--device-shell) 30%,
+    color-mix(in oklch, var(--device-shell) 72%, black) 100%
+  );
+}
+
+.laptop-scoop {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 14%;
+  height: 45%;
+  translate: -50% 0;
+  border-radius: 0 0 10% 10% / 0 0 100% 100%;
+  background: color-mix(in oklch, var(--device-shell) 65%, black);
+}
+
+/* A soft contact shadow, so the base sits on the page. */
+.laptop::after {
+  content: "";
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: -2.5%;
+  height: 3%;
+  z-index: -1;
+  border-radius: 50%;
+  background: var(--shadow-tint);
+  filter: blur(12px);
+}
+
+@keyframes lid-open {
+  from {
+    transform: rotateX(-88deg);
+  }
+  to {
+    transform: none;
+  }
+}
+
+html[data-js] .laptop-lid {
+  transform: rotateX(-88deg);
+}
+
+html[data-js] .laptop[data-inview] .laptop-lid {
+  animation: lid-open 820ms var(--ease-out-expo) 120ms both;
+}
+
+/* The screen wakes in three hard steps once the lid is up. */
+html[data-js] .laptop-screen > :not(.laptop-notch) {
+  opacity: 0;
+}
+
+html[data-js] .laptop[data-inview] .laptop-screen > :not(.laptop-notch) {
+  animation: fade var(--dur-quick) steps(3, end) 700ms both;
+}
+
+/* --- Small recurring pieces ---------------------------------------------- */
+
+/* A live marker's ring pulses three times when first seen, then rests. */
+@keyframes pulse-ring {
+  from {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+html[data-js] .pulse-once {
+  opacity: 0;
+}
+
+html[data-js] [data-inview] .pulse-once {
+  animation: pulse-ring 1.2s var(--ease-out-expo) 3 both;
+  animation-delay: var(--delay, 300ms);
+}
+.cursor-blink {
+  animation: blink 1.05s steps(1, end) infinite;
+}
+
+/* Bobs three times, then rests. A scroll cue that never stops is noise. */
+.bob-step {
+  animation: bob 1.1s steps(1, end) 3 both;
+  animation-delay: var(--delay, 0ms);
+}
+
+/* ===========================================================================
+   REDUCED MOTION
+   Final states, immediately, everywhere. This overrides every rule above.
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  html[data-js] [data-reveal],
+  html[data-js] [data-draw],
+  html[data-js] .sd-fade,
+  html[data-js] .pixel-glyph[data-assemble] rect,
+  html[data-js] .pixel-text[data-drop] rect {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  .intro-scan {
+    clip-path: none !important;
+  }
+
+  html[data-js] .sd-edge {
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
+  }
+
+  html[data-js] .laptop-lid,
+  html[data-js] .laptop-screen > * {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  .intro-scanline,
+  .pulse-once,
+  .cursor-blink,
+  .bob-step {
+    display: none !important;
   }
 }
