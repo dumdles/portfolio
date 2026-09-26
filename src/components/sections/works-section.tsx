@@ -144,7 +144,7 @@ export function WorksSection() {
         eyebrow="Selected works"
         className="mb-10"
         title="Selected work"
-        lead="Only RMAP has a full write-up so far. The dashed frames are placeholders."
+        lead="RMAP and Finvue have full write-ups. The dashed frames are placeholders."
       />
 
       <Reveal>

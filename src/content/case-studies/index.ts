@@ -3,10 +3,11 @@
  * listing it here; /projects/[slug] picks it up at build time.
  */
 
+import { finvue } from "./finvue";
 import { rmap } from "./rmap";
 import type { CaseStudy } from "./types";
 
-export const caseStudies: CaseStudy[] = [rmap];
+export const caseStudies: CaseStudy[] = [rmap, finvue];
 
 export function getCaseStudy(slug: string): CaseStudy | undefined {
   return caseStudies.find((study) => study.slug === slug);

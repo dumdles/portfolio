@@ -2,7 +2,7 @@
  * The works index.
  *
  * ────────────────────────────────────────────────────────────────────────
- *  TO FILL IN: the first two entries are real. The rest are empty slots.
+ *  TO FILL IN: the first three entries are real. The rest are empty slots.
  *
  *  They are deliberately labelled as placeholders rather than filled with
  *  invented projects, because a portfolio that describes work that does not
@@ -69,5 +69,16 @@ export const projects: Project[] = [
   },
   { id: "slot-3", title: "Reserved", summary: "", disciplines: ["break"], year: "", size: "tall", placeholder: true },
   { id: "slot-4", title: "Reserved", summary: "", disciplines: ["design"], year: "", size: "sm", placeholder: true },
-  { id: "slot-5", title: "Reserved", summary: "", disciplines: ["build"], year: "", size: "wide", placeholder: true },
+  {
+    id: "finvue",
+    title: "Finvue",
+    summary:
+      "Personal finance for Singapore. CPF, SGX dividends, T-bills and daily spending in one ledger, with a retirement planner built on it. Web and iOS, built alone.",
+    disciplines: ["build", "design"],
+    year: "2026",
+    size: "wide",
+    stack: ["Next.js", "Supabase", "Expo"],
+    links: [{ label: "finvue.xyz", href: "https://finvue.xyz" }],
+    href: "/projects/finvue",
+  },
 ];
