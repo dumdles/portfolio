@@ -391,7 +391,12 @@ All site copy was rewritten at the same time against
 on the site. The contact form went too: it reported "Message sent" and
 discarded the message.
 
-Still to do: two or three more case studies. This is writing, not code.
+Finvue followed, with two new section kinds: an age-axis diagram for its
+retirement engine and a generalised flow. Both studies open on a laptop
+drawn in CSS, waiting for screenshots. RMAP was cut back to an overview at
+Dylan's request, since it is a company's system.
+
+Still to do: screenshots, and one or two more case studies.
 
 **Phase 4 — The rest.** Craft gallery, Security terminal, Toolbelt bento, Hobbies
 port, Contact with a working backend, Colophon.

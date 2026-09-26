@@ -548,10 +548,33 @@ its `kind` picks the component that draws it:
 | `prose` | `Prose` | Paragraphs. The first sets in ink, the rest muted. |
 | `list` | `List` | Short parallel facts, two columns from `md`. |
 | `system` | `SystemDiagram` | An architecture drawing with a parts list. |
-| `flow` | `Flow` | Numbered steps in a row. Steps marked `offline` get a hatched band behind them. |
+| `flow` | `Flow` | Numbered steps in a row. Steps marked `banded` sit on a hatched band, labelled by the section's `band`. A step's `note` prints at its foot. |
+| `pools` | `Pools` | Lanes on an age axis showing when each pool of money opens, with a marker line and a hatched span, then prose. |
 | `anatomy` | `Anatomy` | A code or identifier, dimensioned segment by segment. |
 | `contributions` | `Contributions` | Prose beside commit-share bars. |
 | `milestones` | `Milestones` | Dated entries on a spine. |
+
+The page opens with the title block and a `Laptop`. A study can also set
+`screenshot`, shown on the laptop, and `live`, a link under the lead.
+
+### `Laptop`
+
+A 14-inch laptop drawn in CSS: a bezel with a camera notch, a 3024 by 1964
+screen, and a wider base with a thumb scoop. The lid is a 3D plane hinged
+on its bottom edge. On first view it swings up from closed, and the screen
+wakes in three steps once it is upright.
+
+At rest the lid has no transform, which is what keeps a screenshot on it
+sharp; the pixel-glyph blur applies to anything left under a 3D transform.
+Without a screenshot the screen shows the project's name in the pixel face.
+Its colours are the `--device-*` tokens, lifted in the dark theme so the
+shell still separates from the page.
+
+It replaces a 3D model. The one offered, a Sketchfab MacBook Pro, carried
+a NoAI licence term and weighed 10.8 MB.
+
+Screenshots go in `public/images/projects/` at 3024 by 1964, or the same
+ratio, with metadata stripped.
 
 ### `SystemDiagram`
 
@@ -578,8 +601,13 @@ sub-label are placed for that height; at 44 they collide.
 
 ### Confidentiality
 
-This repository is public. A case study about a client's system names no
-host, endpoint, table, secret or teammate, and says so in its `notice`.
+This repository is public. A study of work done for a company stays at
+overview level: what it does, how the main parts connect, Dylan's part and
+how it grew. No security controls, identifier formats, internal version
+numbers, per-person commit counts, hosts, endpoints, tables or teammates'
+names. A personal project can go further into how it works, but a live one
+still leaves out its security controls and past vulnerabilities.
+
 Every claim should trace to a source listed in the data file's header
 comment.
 
@@ -637,8 +665,9 @@ Phases 3 onward in `PLAN.md`. In rough dependency order:
 
 - **Project content.** Only one entry in `content/projects.ts` is real. The
   rest are labelled open slots, deliberately not filled with invented work.
-- **More case studies.** RMAP is the only one. The route and components are
-  built; each new study is a data file.
+- **More case studies.** RMAP and Finvue are written. Each new study is a
+  data file.
+- **Screenshots** for the laptop on each case study.
 - **02 Craft**, the visual work gallery. Needs six to nine strong images.
 - **04 Security**, the terminal pane. Needs a terminal primitive.
 - **05 Toolbelt**, a bento of tools grouped by discipline.
