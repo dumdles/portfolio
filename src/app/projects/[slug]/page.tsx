@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DecodeText, DisciplineMarker, TechnicalLabel, TitleBlock } from "@/components/primitives";
 import { CaseSectionView } from "@/components/case-study/sections";
+import { Laptop } from "@/components/case-study/laptop";
 import { SiteFooter } from "@/components/sections/site-footer";
 import Navbar from "@/components/Navbar";
 import { caseStudies, getCaseStudy } from "@/content/case-studies";
@@ -83,12 +84,25 @@ export default async function CaseStudyPage({ params }: { params: Params }) {
                 <p className="intro-rise max-w-prose text-body-lg text-pretty text-ink-muted" style={ms(360)}>
                   {study.lead}
                 </p>
+                {study.live && (
+                  <a
+                    href={study.live.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="intro-fade self-start font-mono text-label uppercase text-brand underline-offset-4 hover:underline"
+                    style={ms(420)}
+                  >
+                    {study.live.label} ↗
+                  </a>
+                )}
               </div>
 
               <div className="intro-rise" style={ms(460)}>
                 <TitleBlock fields={study.titleBlock} decode decodeDelay={560} dense />
               </div>
             </div>
+
+            <Laptop name={study.title} src={study.screenshot?.src} alt={study.screenshot?.alt} priority className="mx-auto mt-20 max-w-5xl" />
           </div>
         </header>
 

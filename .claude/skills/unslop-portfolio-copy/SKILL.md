@@ -90,7 +90,12 @@ the defaults that showed up here specifically.
   neutral or absent.
 - **Team work is credited as team work.** Say which parts were Dylan's, with
   evidence where possible, and name the rest as the team's.
-- **Prefer proper nouns and numbers to adjectives.** "34 schema migrations"
-  over "robust offline storage".
+- **Prefer proper nouns and numbers to adjectives.** "About 20 daily users"
+  over "widely adopted".
+- **Work done for a company stays at overview level.** What it does, how the
+  main parts connect, what Dylan did and how it grew. Leave out security
+  controls, identifier formats, internal version numbers, per-person commit
+  counts, hosts, endpoints, tables and teammates' names. Dylan cut all of
+  these from the RMAP study on 2026-09-26. Personal projects can go deeper.
 - Date ranges use an en dash: closed up between years (2022–2025), spaced when
   either side contains a space (Jun 2022 – Sep 2025).

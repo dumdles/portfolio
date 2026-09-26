@@ -48,7 +48,7 @@ export const projects: Project[] = [
     id: "rmap",
     title: "RMAP",
     summary:
-      "Inspection reporting for AC Tesla's thermal scanning work: a web portal, an offline iPad app and the API between them. I wrote the first version on my own.",
+      "Inspection reporting for AC Tesla's thermal scanning work: a web portal, an offline iPad app and the API between them. I took it on alone and later led the team of four that moved it onto AWS.",
     disciplines: ["build", "design", "break"],
     year: "2024–2026",
     size: "lg",

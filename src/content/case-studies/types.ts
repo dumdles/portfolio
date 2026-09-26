@@ -54,12 +54,39 @@ export interface SystemDiagram {
 export interface FlowStep {
   title: string;
   body: string;
-  /** Which client the step happens in. */
+  /** Where the step happens: a client, a service, a stage. */
   where: string;
-  /** Happens with no connection. */
-  offline?: boolean;
-  /** Needs a connection. */
-  online?: boolean;
+  /** Inside the framed stretch. Consecutive steps only; see `band` on the section. */
+  banded?: boolean;
+  /** A short label at the foot of the step, in the brand colour. */
+  note?: string;
+}
+
+/** A stretch of an age axis during which a pool of money can be drawn on. */
+export interface PoolSegment {
+  from: number;
+  to: number;
+  /** `partial`: only part of the pool is open, drawn lighter. */
+  kind?: "full" | "partial";
+  label?: string;
+}
+
+export interface PoolLane {
+  label: string;
+  sub?: string;
+  segments: PoolSegment[];
+}
+
+export interface PoolsDiagram {
+  from: number;
+  to: number;
+  ticks: number[];
+  /** A marked age, drawn as a line across every lane. */
+  marker: { at: number; label: string };
+  /** The span to hatch across every lane. */
+  span: { from: number; to: number; label: string };
+  lanes: PoolLane[];
+  caption: string;
 }
 
 export interface AnatomySegment {
@@ -76,7 +103,8 @@ export interface Contribution {
 }
 
 export interface Milestone {
-  date: string;
+  /** Leave out when the order is known but the dates are not; the entry is numbered instead. */
+  date?: string;
   text: string;
 }
 
@@ -90,8 +118,9 @@ interface SectionBase {
 
 export type CaseSection =
   | (SectionBase & { kind: "prose"; paragraphs: string[] })
-  | (SectionBase & { kind: "system"; diagram: SystemDiagram })
-  | (SectionBase & { kind: "flow"; steps: FlowStep[] })
+  | (SectionBase & { kind: "system"; diagram: SystemDiagram; caption: string })
+  | (SectionBase & { kind: "flow"; steps: FlowStep[]; band?: string })
+  | (SectionBase & { kind: "pools"; diagram: PoolsDiagram; paragraphs: string[] })
   | (SectionBase & { kind: "anatomy"; example: AnatomySegment[]; notes: string[] })
   | (SectionBase & { kind: "list"; items: string[] })
   | (SectionBase & { kind: "contributions"; items: Contribution[]; paragraphs: string[]; footnote?: string })
@@ -106,6 +135,10 @@ export interface CaseStudy {
   lead: string;
   disciplines: Discipline[];
   titleBlock: { label: string; value: string }[];
+  /** A screenshot for the laptop at the top of the page. Without one the screen shows the title. */
+  screenshot?: { src: string; alt: string };
+  /** Where the project can be seen, if it is public. */
+  live?: { label: string; href: string };
   sections: CaseSection[];
   /** Printed at the foot of the page. For confidentiality and credit notes. */
   notice?: string;

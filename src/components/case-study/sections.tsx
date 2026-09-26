@@ -3,7 +3,7 @@
 import * as React from "react";
 import { DimensionLine, DraftingSheet, Reveal, SectionHeader, TechnicalLabel, stagger } from "@/components/primitives";
 import { cn } from "@/lib/utils";
-import type { AnatomySegment, CaseSection, Contribution, FlowStep, Milestone } from "@/content/case-studies/types";
+import type { AnatomySegment, CaseSection, Contribution, FlowStep, Milestone, PoolsDiagram } from "@/content/case-studies/types";
 import { SystemDiagram } from "./system-diagram";
 
 /* -------------------------------------------------------------------------- */
@@ -36,26 +36,30 @@ function List({ items }: { items: string[] }) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Flow: steps across the clients, with the offline stretch framed            */
+/* Flow: numbered steps in a row, with one stretch of them framed            */
 /* -------------------------------------------------------------------------- */
 
-function Flow({ steps }: { steps: FlowStep[] }) {
-  const first = steps.findIndex((step) => step.offline);
-  const last = steps.findLastIndex((step) => step.offline);
-  const band = first >= 0 ? `${first + 1} / span ${last - first + 1}` : null;
+function Flow({ steps, band }: { steps: FlowStep[]; band?: string }) {
+  const first = steps.findIndex((step) => step.banded);
+  const last = steps.findLastIndex((step) => step.banded);
+  const span = band && first >= 0 ? `${first + 1} / span ${last - first + 1}` : null;
 
   return (
-    <Reveal as="ol" className="relative grid gap-3 lg:mt-16 lg:grid-cols-6 lg:gap-4">
-      {/* The stretch that needs no signal, framed behind its steps. */}
-      {band && (
+    <Reveal
+      as="ol"
+      style={{ "--n": steps.length } as React.CSSProperties}
+      className={cn("relative grid gap-3 lg:grid-cols-[repeat(var(--n),minmax(0,1fr))] lg:gap-4", span && "lg:mt-16")}
+    >
+      {/* The framed stretch, drawn behind its steps. */}
+      {span && (
         <li
           aria-hidden
           data-reveal="fade"
-          style={{ "--gc": band, "--delay": "200ms" } as React.CSSProperties}
+          style={{ "--gc": span, "--delay": "200ms" } as React.CSSProperties}
           className="pointer-events-none relative -mx-2 -mb-2 -mt-10 hidden rounded-xl border border-dashed border-rule-strong bg-[repeating-linear-gradient(135deg,var(--grid)_0_1px,transparent_1px_9px)] lg:block lg:[grid-column:var(--gc)] lg:[grid-row:1]"
         >
           <TechnicalLabel tone="brand" className="absolute left-3 top-3">
-            No signal needed
+            {band}
           </TechnicalLabel>
         </li>
       )}
@@ -73,15 +77,108 @@ function Flow({ steps }: { steps: FlowStep[] }) {
           </div>
           <h3 className="font-display text-heading-sm font-semibold text-ink">{step.title}</h3>
           <p className="text-body-sm text-pretty text-ink-muted">{step.body}</p>
-          {step.offline && <TechnicalLabel className="mt-auto pt-1 lg:hidden">No signal needed</TechnicalLabel>}
-          {step.online && (
+          {band && step.banded && <TechnicalLabel className="mt-auto pt-1 lg:hidden">{band}</TechnicalLabel>}
+          {step.note && (
             <TechnicalLabel tone="brand" className="mt-auto pt-1">
-              Needs signal
+              {step.note}
             </TechnicalLabel>
           )}
         </li>
       ))}
     </Reveal>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Pools: when each pool of money opens, on an age axis                       */
+/* -------------------------------------------------------------------------- */
+
+function Pools({ diagram, paragraphs }: { diagram: PoolsDiagram; paragraphs: string[] }) {
+  const range = diagram.to - diagram.from;
+  const pct = (age: number) => `${(((age - diagram.from) / range) * 100).toFixed(3)}%`;
+  const width = (from: number, to: number) => `${(((to - from) / range) * 100).toFixed(3)}%`;
+
+  return (
+    <div className="flex flex-col gap-12">
+      <Reveal className="rounded-lg border border-rule bg-surface/70 p-5 sm:p-8">
+        <figure>
+          <div className="flex gap-4">
+            {/* Lane names */}
+            <div className="w-24 shrink-0 pt-8 sm:w-36">
+              {diagram.lanes.map((lane, i) => (
+                <div key={lane.label} data-reveal style={stagger(i)} className="flex h-14 flex-col justify-center">
+                  <span className="text-body-sm font-medium leading-tight text-ink">{lane.label}</span>
+                  {lane.sub && <span className="mt-0.5 font-mono text-label uppercase text-ink-faint">{lane.sub}</span>}
+                </div>
+              ))}
+              <div className="flex h-8 items-end font-mono text-label uppercase text-ink-faint">Age</div>
+            </div>
+
+            {/* Tracks, with the span and the marker laid over all of them */}
+            <div className="relative min-w-0 flex-1 pt-8">
+              <div
+                aria-hidden
+                data-reveal="fade"
+                style={{ left: pct(diagram.span.from), width: width(diagram.span.from, diagram.span.to), "--delay": "480ms" } as React.CSSProperties}
+                className="absolute bottom-8 top-6 rounded-sm border-x border-dashed border-brand/60 bg-[repeating-linear-gradient(135deg,color-mix(in_oklch,var(--brand)_14%,transparent)_0_1px,transparent_1px_7px)]"
+              >
+                <span className="absolute -top-1 left-1.5 -translate-y-full whitespace-nowrap font-mono text-label uppercase text-brand">{diagram.span.label}</span>
+              </div>
+
+              {diagram.lanes.map((lane, i) => (
+                <div key={lane.label} className="relative h-14 border-b border-rule last-of-type:border-b-0">
+                  {lane.segments.map((segment, j) => (
+                    <div key={j} className="absolute inset-y-3.5" style={{ left: pct(segment.from), width: width(segment.from, segment.to) }}>
+                      <div
+                        data-draw
+                        style={{ "--delay": `${140 + i * 90 + j * 70}ms` } as React.CSSProperties}
+                        className={cn("h-full w-full rounded-sm", segment.kind === "partial" ? "bg-brand/30" : "bg-brand")}
+                      />
+                      {segment.label && (
+                        <span
+                          className={cn(
+                            "absolute left-2 top-1/2 hidden max-w-[calc(100%-0.5rem)] -translate-y-1/2 truncate font-mono text-label uppercase sm:block",
+                            segment.kind === "partial" ? "text-ink" : "text-brand-ink"
+                          )}
+                        >
+                          {segment.label}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ))}
+
+              <div
+                aria-hidden
+                data-reveal="fade"
+                style={{ left: pct(diagram.marker.at), "--delay": "380ms" } as React.CSSProperties}
+                className="absolute bottom-8 top-0 w-px bg-ink"
+              >
+                <span className="absolute right-full top-0 mr-1.5 whitespace-nowrap font-mono text-label uppercase text-ink">{diagram.marker.label}</span>
+              </div>
+
+              {/* Age axis */}
+              <div className="relative h-8 border-t border-rule-strong">
+                {diagram.ticks.map((tick) => (
+                  <span key={tick} className="absolute top-0 flex -translate-x-1/2 flex-col items-center" style={{ left: pct(tick) }}>
+                    <span className="h-1.5 w-px bg-rule-strong" />
+                    <span className="mt-1 font-mono text-caption tabular-nums text-ink-muted">{tick}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <figcaption className="mt-6 flex items-baseline gap-3">
+            <TechnicalLabel tone="brand">Fig. 2</TechnicalLabel>
+            <span className="text-caption text-pretty text-ink-muted">{diagram.caption}</span>
+          </figcaption>
+        </figure>
+      </Reveal>
+
+      <Prose paragraphs={paragraphs} />
+    </div>
   );
 }
 
@@ -189,8 +286,8 @@ function Milestones({ items }: { items: Milestone[] }) {
     <Reveal as="ol" className="relative max-w-3xl">
       <span aria-hidden data-reveal="fade" className="absolute bottom-2 left-[5.75rem] top-2 hidden w-px bg-rule sm:block" />
       {items.map((item, i) => (
-        <li key={item.date} data-reveal style={stagger(i)} className="relative grid gap-1 py-3 sm:grid-cols-[5.75rem_1fr] sm:gap-8">
-          <span className="font-mono text-caption tabular-nums text-ink-faint sm:pt-0.5">{item.date}</span>
+        <li key={item.text} data-reveal style={stagger(i)} className="relative grid gap-1 py-3 sm:grid-cols-[5.75rem_1fr] sm:gap-8">
+          <span className="font-mono text-caption tabular-nums text-ink-faint sm:pt-0.5">{item.date ?? String(i + 1).padStart(2, "0")}</span>
           <span className="relative text-body text-pretty text-ink">
             <span aria-hidden className="absolute -left-8 top-[0.6em] hidden size-2 -translate-x-1/2 rounded-full bg-brand ring-4 ring-paper sm:block" />
             {item.text}
@@ -212,9 +309,10 @@ export function CaseSectionView({ section, grid }: { section: CaseSection; grid:
 
       {section.kind === "prose" && <Prose paragraphs={section.paragraphs} />}
       {section.kind === "list" && <List items={section.items} />}
-      {section.kind === "flow" && <Flow steps={section.steps} />}
+      {section.kind === "flow" && <Flow steps={section.steps} band={section.band} />}
+      {section.kind === "pools" && <Pools diagram={section.diagram} paragraphs={section.paragraphs} />}
       {section.kind === "anatomy" && <Anatomy example={section.example} notes={section.notes} />}
-      {section.kind === "system" && <SystemDiagram diagram={section.diagram} caption="RMAP on AWS, simplified. Hosts and endpoints are left out." />}
+      {section.kind === "system" && <SystemDiagram diagram={section.diagram} caption={section.caption} />}
       {section.kind === "contributions" && <Contributions paragraphs={section.paragraphs} items={section.items} footnote={section.footnote} />}
       {section.kind === "milestones" && <Milestones items={section.items} />}
     </DraftingSheet>

@@ -86,7 +86,7 @@ export const timeline: TimelineEntry[] = [
     track: "work",
     title: "AC Tesla Pte Ltd",
     role: "Full Stack Developer Intern",
-    detail: "Worked on RMAP, the company's inspection reporting system: its first version, its iPad app and its API.",
+    detail: "Took RMAP, the company's inspection reporting system, from a basic prototype to production on AWS, and led its team of four.",
     href: "/projects/rmap",
     start: "2022-06",
     period: "Jun 2022 – Sep 2025",

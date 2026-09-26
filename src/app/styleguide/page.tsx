@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Annotation, BentoGrid, BentoItem, DecodeText, DimensionLine, DraftingSheet, PixelGlyph, PixelText, Reveal, SectionHeader, TechnicalLabel, TiltCard, TitleBlock, stagger } from "@/components/primitives";
 import { glyphs, type GlyphName } from "@/lib/pixel/glyphs";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Laptop } from "@/components/case-study/laptop";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -476,6 +477,16 @@ export default function StyleguidePage() {
             <div className="mt-6 rounded-md border border-rule bg-surface p-6 text-ink">
               <TechnicalLabel className="mb-4">fluid · drop · interactive</TechnicalLabel>
               <PixelText text="Point here" fluid drop interactive />
+            </div>
+          </Block>
+
+          <Block
+            part="13"
+            name="Laptop"
+            description="A 14-inch laptop drawn in CSS, for a project's screenshot at the top of its case study. The lid swings up on first view and has no transform at rest, so the screenshot stays sharp. Without a screenshot the screen shows the project's name."
+          >
+            <div className="rounded-md border border-rule bg-surface px-6 pb-10 pt-8">
+              <Laptop name="Sample" className="mx-auto max-w-2xl" />
             </div>
           </Block>
         </div>

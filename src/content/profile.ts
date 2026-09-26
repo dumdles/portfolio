@@ -30,7 +30,7 @@ export const profile = {
 
   /** Sources: RMAP commit history (Sep 2024 onward) and the owner's own account. */
   intro:
-    "For the last two years that meant RMAP, the system AC Tesla uses for its thermal inspection reports. I wrote its first version on my own and started its iPad app. Now I'm a C4X Expert in the Digital and Intelligence Service.",
+    "For the last two years that meant RMAP, the system AC Tesla uses for its thermal inspection reports. I took it from a basic prototype to a production system on AWS, and by the end I led a team of four. Now I'm a C4X Expert in the Digital and Intelligence Service.",
 
   /** The drawing's title block. Order matters; it reads left to right. */
   titleBlock: [

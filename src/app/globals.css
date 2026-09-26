@@ -162,6 +162,15 @@
   --radius: 0.375rem;
   --shadow-tint: oklch(0.45 0.03 260 / 0.14);
 
+  /* The laptop frame. A depicted object, so its colours stay close to the
+     real finish in both themes; the dark theme lifts the shell so it still
+     separates from the page. */
+  --device-shell: oklch(0.34 0.006 260);
+  --device-shell-hi: oklch(0.5 0.006 260);
+  --device-bezel: oklch(0.14 0.004 260);
+  --device-screen: oklch(0.19 0.012 258);
+  --device-splash: oklch(0.8 0.1 250);
+
   /* Surfaces */
   --paper: oklch(0.977 0.004 85);
   --surface: oklch(0.995 0.002 85);
@@ -225,6 +234,11 @@
    ========================================================================= */
 .dark {
   --shadow-tint: oklch(0.08 0.02 260 / 0.55);
+
+  --device-shell: oklch(0.4 0.008 260);
+  --device-shell-hi: oklch(0.56 0.008 260);
+  --device-bezel: oklch(0.11 0.004 260);
+  --device-screen: oklch(0.15 0.012 258);
 
   /* Surfaces */
   --paper: oklch(0.178 0.017 258);
@@ -758,6 +772,125 @@ html[data-js] [data-inview] .sd-fade {
   animation-delay: var(--d, 0ms);
 }
 
+/* --- Laptop frame -----------------------------------------------------------
+
+   The lid hinges on its bottom edge and swings up once, on first view. At
+   rest it has no transform, so a screenshot on it is not resampled. */
+.laptop {
+  position: relative;
+}
+
+.laptop-stage {
+  width: 86%;
+  margin-inline: auto;
+  perspective: 1800px;
+  perspective-origin: 50% 30%;
+}
+
+.laptop-lid {
+  transform-origin: 50% 100%;
+  padding: 1.6% 1.6% 2.8%;
+  border-radius: 2.4% 2.4% 0.5% 0.5% / 3.6% 3.6% 0.8% 0.8%;
+  background: var(--device-bezel);
+  box-shadow:
+    inset 0 0 0 1.5px var(--device-shell-hi),
+    0 40px 60px -40px var(--shadow-tint);
+}
+
+.laptop-screen {
+  position: relative;
+  aspect-ratio: 3024 / 1964;
+  overflow: hidden;
+  border-radius: 1% / 1.5%;
+  background: var(--device-screen);
+}
+
+.laptop-notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 10.5%;
+  height: 3.2%;
+  translate: -50% 0;
+  border-radius: 0 0 18% 18% / 0 0 45% 45%;
+  background: var(--device-bezel);
+}
+
+.laptop-splash {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background-image:
+    linear-gradient(to right, color-mix(in oklch, var(--device-splash) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklch, var(--device-splash) 7%, transparent) 1px, transparent 1px);
+  background-size: 3.125% 4.8%;
+}
+
+.laptop-base {
+  position: relative;
+  height: 0;
+  padding-bottom: 2.2%;
+  border-radius: 0.3% 0.3% 4% 4% / 8% 8% 100% 100%;
+  background: linear-gradient(
+    to bottom,
+    var(--device-shell-hi) 0,
+    var(--device-shell) 30%,
+    color-mix(in oklch, var(--device-shell) 72%, black) 100%
+  );
+}
+
+.laptop-scoop {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 14%;
+  height: 45%;
+  translate: -50% 0;
+  border-radius: 0 0 10% 10% / 0 0 100% 100%;
+  background: color-mix(in oklch, var(--device-shell) 65%, black);
+}
+
+/* A soft contact shadow, so the base sits on the page. */
+.laptop::after {
+  content: "";
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: -2.5%;
+  height: 3%;
+  z-index: -1;
+  border-radius: 50%;
+  background: var(--shadow-tint);
+  filter: blur(12px);
+}
+
+@keyframes lid-open {
+  from {
+    transform: rotateX(-88deg);
+  }
+  to {
+    transform: none;
+  }
+}
+
+html[data-js] .laptop-lid {
+  transform: rotateX(-88deg);
+}
+
+html[data-js] .laptop[data-inview] .laptop-lid {
+  animation: lid-open 820ms var(--ease-out-expo) 120ms both;
+}
+
+/* The screen wakes in three hard steps once the lid is up. */
+html[data-js] .laptop-screen > :not(.laptop-notch) {
+  opacity: 0;
+}
+
+html[data-js] .laptop[data-inview] .laptop-screen > :not(.laptop-notch) {
+  animation: fade var(--dur-quick) steps(3, end) 700ms both;
+}
+
 /* --- Small recurring pieces ---------------------------------------------- */
 
 /* A live marker's ring pulses three times when first seen, then rests. */
@@ -825,6 +958,13 @@ html[data-js] [data-inview] .pulse-once {
 
   html[data-js] .sd-edge {
     stroke-dashoffset: 0 !important;
+    animation: none !important;
+  }
+
+  html[data-js] .laptop-lid,
+  html[data-js] .laptop-screen > * {
+    opacity: 1 !important;
+    transform: none !important;
     animation: none !important;
   }
 
