@@ -584,7 +584,10 @@ It replaces a 3D model. The one offered, a Sketchfab MacBook Pro, carried
 a NoAI licence term and weighed 10.8 MB.
 
 Screenshots go in `public/images/projects/` at 3024 by 1964, or the same
-ratio, with metadata stripped.
+ratio, with metadata stripped. Capture them in Chrome's device toolbar at
+1512 by 982 with a device pixel ratio of 2. A study's `screenshot` takes an
+optional `srcDark`, shown while the site is in dark mode; both versions
+load, so switching theme swaps them at once. Use demo data.
 
 ### `SystemDiagram`
 

@@ -24,6 +24,8 @@ import { PixelText } from "@/components/primitives";
 export interface LaptopProps {
   /** Screenshot of the page, ideally 3024 x 1964 or the same ratio. */
   src?: string;
+  /** The same screen in dark mode. Shown while the site is dark. */
+  srcDark?: string;
   alt?: string;
   /** Shown on the screen when there is no screenshot. */
   name: string;
@@ -31,7 +33,9 @@ export interface LaptopProps {
   className?: string;
 }
 
-export function Laptop({ src, alt = "", name, priority = false, className }: LaptopProps) {
+const SIZES = "(min-width: 1152px) 960px, 90vw";
+
+export function Laptop({ src, srcDark, alt = "", name, priority = false, className }: LaptopProps) {
   const [ref, inView] = useInView<HTMLDivElement>({ rootMargin: "0px 0px -10% 0px" });
 
   return (
@@ -40,7 +44,11 @@ export function Laptop({ src, alt = "", name, priority = false, className }: Lap
         <div className="laptop-lid">
           <div className="laptop-screen">
             {src ? (
-              <Image src={src} alt={alt} fill priority={priority} sizes="(min-width: 1152px) 960px, 90vw" className="object-cover object-top" />
+              <>
+                <Image src={src} alt={alt} fill priority={priority} sizes={SIZES} className={cn("object-cover object-top", srcDark && "dark:hidden")} />
+                {/* Both load, so a theme switch shows the other at once. */}
+                {srcDark && <Image src={srcDark} alt={alt} fill loading="eager" sizes={SIZES} className="hidden object-cover object-top dark:block" />}
+              </>
             ) : (
               <div aria-hidden className="laptop-splash">
                 <PixelText text={name} fluid className="w-[34%] text-[var(--device-splash)]" />

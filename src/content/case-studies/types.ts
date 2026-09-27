@@ -135,8 +135,12 @@ export interface CaseStudy {
   lead: string;
   disciplines: Discipline[];
   titleBlock: { label: string; value: string }[];
-  /** A screenshot for the laptop at the top of the page. Without one the screen shows the title. */
-  screenshot?: { src: string; alt: string };
+  /**
+   * A screenshot for the laptop at the top of the page, 3024 x 1964. Without
+   * one the screen shows the title. `srcDark`, if given, is shown instead
+   * while the site is in dark mode.
+   */
+  screenshot?: { src: string; srcDark?: string; alt: string };
   /** Where the project can be seen, if it is public. */
   live?: { label: string; href: string };
   sections: CaseSection[];

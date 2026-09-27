@@ -102,7 +102,7 @@ export default async function CaseStudyPage({ params }: { params: Params }) {
               </div>
             </div>
 
-            <Laptop name={study.title} src={study.screenshot?.src} alt={study.screenshot?.alt} priority className="mx-auto mt-20 max-w-5xl" />
+            <Laptop name={study.title} src={study.screenshot?.src} srcDark={study.screenshot?.srcDark} alt={study.screenshot?.alt} priority className="mx-auto mt-20 max-w-5xl" />
           </div>
         </header>
 
