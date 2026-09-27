@@ -31,6 +31,7 @@ export const rmap: CaseStudy = {
   ],
   screenshot: {
     src: "/images/projects/rmap-screenshot.png",
+    srcDark: "/images/projects/rmap-screenshot-dark.png",
     alt: "RMAP's dashboard: report counts, quick actions, and the latest reports with their status.",
   },
   sections: [

@@ -32,6 +32,7 @@ export const finvue: CaseStudy = {
   ],
   screenshot: {
     src: "/images/projects/finvue-screenshot.png",
+    srcDark: "/images/projects/finvue-screenshot-dark.png",
     alt: "Finvue's net worth page: the total, how much is reachable today and how much is locked in CPF, and a chart of the last three months.",
   },
   live: { label: "finvue.xyz", href: "https://finvue.xyz" },
