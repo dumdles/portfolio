@@ -23,11 +23,34 @@
  */
 
 import type { Gallery } from "./types";
-import eeeShirtWhite from "../../../public/images/gallery/eee-shirt-white.jpg";
+import eeeShirtWhite from "../../../public/images/gallery/sp-tshirt-white.png";
 
 export const design: Gallery = {
   slug: "design",
   title: "Design",
   lead: "Posters and apparel, most of them from my year as publications secretary of the EEE Club at Singapore Polytechnic.",
-  collections: [],
+  collections: [
+    {
+      id: "eee-club-apparel",
+      layout: "apparel",
+      title: "Club apparel",
+      context: "EEE Club, Singapore Polytechnic",
+      role: "Publications secretary",
+      period: "2023–2024",
+      garments: [
+        {
+          id: "eee-tee-ay2324",
+          name: "Club T-shirt, AY23/24",
+          back: {
+            image: eeeShirtWhite,
+            alt: "The back of a white EEE Club T-shirt for AY23/24. Black line drawings of a laptop, a fighter jet, a signal tower and a rising bar chart stand on a grid, each labelled with one of the school's engineering courses.",
+          },
+          specs: [
+            { label: "Garment", value: "T-shirt, white" },
+            { label: "Year", value: "AY23/24" },
+          ],
+        },
+      ],
+    },
+  ],
 };

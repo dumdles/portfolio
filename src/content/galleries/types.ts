@@ -41,7 +41,8 @@ export interface GarmentView {
 export interface Garment {
   id: string;
   name: string;
-  front: GarmentView;
+  /** Give at least one of front and back. */
+  front?: GarmentView;
   back?: GarmentView;
   /** The finished piece, worn or laid out. */
   photo?: GalleryImage;
@@ -85,7 +86,7 @@ export function collectionImages(collection: Collection): GalleryImage[] {
       return [...(collection.selects ?? []), ...collection.items];
     case "apparel":
       return collection.garments.flatMap((g) => [
-        { src: g.front.image, alt: g.front.alt, title: g.name, caption: "Front" },
+        ...(g.front ? [{ src: g.front.image, alt: g.front.alt, title: g.name, caption: "Front" }] : []),
         ...(g.back ? [{ src: g.back.image, alt: g.back.alt, title: g.name, caption: "Back" }] : []),
         ...(g.photo ? [g.photo] : []),
       ]);

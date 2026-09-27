@@ -118,15 +118,15 @@ function Apparel({ garments, open }: { garments: Garment[]; open: (i: number) =>
   return (
     <div className="flex flex-col gap-14">
       {garments.map((g) => {
-        const front = cursor++;
+        const front = g.front ? cursor++ : -1;
         const back = g.back ? cursor++ : -1;
         const photo = g.photo ? cursor++ : -1;
         return (
           <Reveal key={g.id} className="grid gap-6 lg:grid-cols-[2fr_1fr]">
             <div data-reveal className="flex flex-col gap-4">
               <h3 className="font-display text-heading font-semibold text-ink">{g.name}</h3>
-              <div className={cn("grid gap-3 sm:gap-4", g.back && "grid-cols-2")}>
-                <View label="Front" view={g.front} onOpen={() => open(front)} />
+              <div className={cn("grid gap-3 sm:gap-4", g.front && g.back ? "grid-cols-2" : "max-w-lg")}>
+                {g.front && <View label="Front" view={g.front} onOpen={() => open(front)} />}
                 {g.back && <View label="Back" view={g.back} onOpen={() => open(back)} />}
               </div>
             </div>
