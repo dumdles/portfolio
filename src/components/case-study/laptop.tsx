@@ -45,9 +45,9 @@ export function Laptop({ src, srcDark, alt = "", name, priority = false, classNa
           <div className="laptop-screen">
             {src ? (
               <>
-                <Image src={src} alt={alt} fill priority={priority} sizes={SIZES} className={cn("object-cover object-top", srcDark && "dark:hidden")} />
+                <Image src={src} alt={alt} fill priority={priority} draggable={false} sizes={SIZES} className={cn("object-cover object-top", srcDark && "dark:hidden")} />
                 {/* Both load, so a theme switch shows the other at once. */}
-                {srcDark && <Image src={srcDark} alt={alt} fill loading="eager" sizes={SIZES} className="hidden object-cover object-top dark:block" />}
+                {srcDark && <Image src={srcDark} alt={alt} fill loading="eager" draggable={false} sizes={SIZES} className="hidden object-cover object-top dark:block" />}
               </>
             ) : (
               <div aria-hidden className="laptop-splash">

@@ -556,6 +556,13 @@ html[data-js] [data-inview] [data-draw] {
   animation-delay: var(--delay, 0ms);
 }
 
+/* Photos are not drag handles. Dragging one pulls a ghost of it across the
+   page, which reads as a glitch on a designed page. Firefox ignores this
+   property, so images also set draggable={false}. */
+img {
+  -webkit-user-drag: none;
+}
+
 /* --- Load choreography ---------------------------------------------------
 
    The hero plays on first paint without waiting for hydration, so its
@@ -889,6 +896,18 @@ html[data-js] .laptop-screen > :not(.laptop-notch) {
 
 html[data-js] .laptop[data-inview] .laptop-screen > :not(.laptop-notch) {
   animation: fade var(--dur-quick) steps(3, end) 700ms both;
+}
+
+/* --- Contact sheet -----------------------------------------------------------
+
+   A photoshoot's frames on a strip of film: dark in both themes, with a row
+   of sprocket holes along the top and bottom edges. */
+.contact-sheet {
+  --hole: color-mix(in oklch, var(--paper) 80%, transparent);
+  background:
+    radial-gradient(circle, var(--hole) 0 1.5px, transparent 2px) 0 6px / 14px 12px repeat-x,
+    radial-gradient(circle, var(--hole) 0 1.5px, transparent 2px) 0 calc(100% - 6px) / 14px 12px repeat-x,
+    var(--device-bezel);
 }
 
 /* --- Small recurring pieces ---------------------------------------------- */

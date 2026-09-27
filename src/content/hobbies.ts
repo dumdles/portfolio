@@ -11,6 +11,7 @@
 import type { StaticImageData } from "next/image";
 import type { BentoSize } from "@/components/primitives";
 import type { GlyphName } from "@/lib/pixel/glyphs";
+import { galleryHref } from "@/content/galleries";
 
 // Photos live in public/images. Imported rather than referenced by path so
 // Next.js knows their size and inlines a tiny blurred copy of each, shown
@@ -34,11 +35,13 @@ export interface Hobby {
   accent: string;
   image: StaticImageData;
   size: BentoSize;
+  /** A gallery page. Set only while that gallery has work to show. */
+  href?: string;
 }
 
 export const hobbies: Hobby[] = [
-  { id: "design", title: "Design", glyph: "nib", motion: "loop", accent: "var(--design)", image: designPhoto, size: "sm" },
-  { id: "media", title: "Media", glyph: "camera", motion: "swap", accent: "var(--break)", image: mediaPhoto, size: "sm" },
+  { id: "design", title: "Design", glyph: "nib", motion: "loop", accent: "var(--design)", image: designPhoto, size: "sm", href: galleryHref.design },
+  { id: "media", title: "Media", glyph: "camera", motion: "swap", accent: "var(--break)", image: mediaPhoto, size: "sm", href: galleryHref.media },
   { id: "cycling", title: "Cycling", glyph: "bike", motion: "loop", accent: "var(--positive)", image: cyclingPhoto, size: "sm" },
   { id: "guitar", title: "Guitar", glyph: "guitar", motion: "loop", accent: "var(--build)", image: guitarPhoto, size: "sm" },
   {

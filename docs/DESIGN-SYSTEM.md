@@ -61,6 +61,7 @@ src/
     layout.tsx             fonts, metadata, theme provider
     page.tsx               the spine: which sections, in what order
     projects/[slug]/       case study pages, one per file in content/case-studies
+    design/, media/        gallery pages, unpublished until they have work
     styleguide/page.tsx    the rendered reference
   components/
     primitives/            the design system
@@ -79,6 +80,7 @@ src/
       index.ts             import from here
     sections/              one file per numbered section, plus the footer
     case-study/            the section kinds a case study is built from
+    gallery/               gallery pages, their layouts and the lightbox
     ui/                    shadcn/ui, remapped onto system tokens
     theme-provider.tsx
     theme-toggle.tsx
@@ -90,6 +92,7 @@ src/
     hobbies.ts             the off-the-clock cards; imports its photos
                            from public/images for their blur placeholders
     case-studies/          one file per case study, plus the shared types
+    galleries/             design.ts and media.ts, the /design and /media pages
   hooks/
     use-reduced-motion.ts
     use-in-view.ts
@@ -623,6 +626,30 @@ still leaves out its security controls and past vulnerabilities.
 
 Every claim should trace to a source listed in the data file's header
 comment.
+
+### Galleries
+
+`/design` and `/media` show visual work that does not suit a case study:
+posters, photoshoots, apparel. Each page reads a content file in
+`src/content/galleries/`, a list of collections, and each collection picks
+a layout:
+
+| Layout | For |
+|---|---|
+| `posters` | Instagram posts and posters, cropped to 4:5 frames. |
+| `contact-sheet` | A photoshoot: `selects` set large, then every frame on a strip of film, numbered. The strip is dark in both themes. |
+| `apparel` | Shirts and jackets: front and back on a fine grid, optional callouts pinned by percentage, a spec title block and a photo of the finished piece. |
+| `grid` | Anything else, in columns that keep each image's own shape. |
+
+Images are static imports from `public/images/gallery/`, for their sizes
+and blurred placeholders. Every image opens in a lightbox that steps through
+its collection with the arrow keys, closes on Esc, keeps focus inside, and
+hands focus back to the frame that opened it. It renders into
+`document.body`; inside a section it would sit under the navbar.
+
+A gallery with no images is unpublished: its route 404s and the Design or
+Media hobby tile stays a plain card. Once it has work, the tile becomes a
+link to it.
 
 ---
 

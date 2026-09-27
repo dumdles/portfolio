@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 import { BentoGrid, BentoItem, DraftingSheet, PixelGlyph, Reveal, SectionHeader, TechnicalLabel, TiltCard, stagger } from "@/components/primitives";
 import { hobbies, type Hobby } from "@/content/hobbies";
@@ -32,6 +33,7 @@ function HobbyTile({ hobby, index }: { hobby: Hobby; index: number }) {
             placeholder="blur"
             loading="eager"
             fetchPriority="low"
+            draggable={false}
             sizes={hobby.size === "md" ? "(max-width: 640px) 100vw, 50vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"}
             className="object-cover"
           />
@@ -47,7 +49,15 @@ function HobbyTile({ hobby, index }: { hobby: Hobby; index: number }) {
         <div className="relative mt-10">
           <h3 className="font-display text-heading-sm font-semibold text-ink sm:text-heading">{hobby.title}</h3>
           {hobby.note && <p className="mt-1 text-body-sm text-ink-muted">{hobby.note}</p>}
+          {hobby.href && (
+            <TechnicalLabel tone="brand" className="mt-2">
+              Gallery ↗
+            </TechnicalLabel>
+          )}
         </div>
+
+        {/* The whole card is the link. Focus shows on the card itself. */}
+        {hobby.href && <Link href={hobby.href} aria-label={`${hobby.title} gallery`} className="absolute inset-0 z-20 outline-none" />}
       </TiltCard>
 
       {/* Outside the tilting card so its pixels stay on the screen grid. A

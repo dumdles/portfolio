@@ -221,7 +221,7 @@ export function HeroSection() {
             >
               <div className="intro-scan absolute inset-0" style={ms(220)}>
                 <div ref={imageRef} className="absolute inset-0 will-change-transform" style={{ transition: "transform 0.25s var(--ease-snap)" }}>
-                  <Image src="/images/dylan-hero.jpg" alt={`Portrait of ${profile.name}`} fill sizes="(max-width: 1024px) 100vw, 40vw" priority className="object-cover" />
+                  <Image src="/images/dylan-hero.jpg" alt={`Portrait of ${profile.name}`} fill sizes="(max-width: 1024px) 100vw, 40vw" priority draggable={false} className="object-cover" />
                 </div>
               </div>
 

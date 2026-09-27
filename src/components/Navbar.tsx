@@ -21,8 +21,9 @@ const navLinks = [
 export default function Navbar() {
   const pathname = usePathname();
   const onHome = pathname === "/";
-  // Inside a project page, the project belongs to Works.
-  const [activeSection, setActiveSection] = useState(onHome ? "home" : "works");
+  // A project page belongs to Works; a gallery (/design, /media) belongs to
+  // Off the clock, where its hobby tile links from.
+  const [activeSection, setActiveSection] = useState(onHome ? "home" : pathname.startsWith("/projects") ? "works" : "hobbies");
   const [isScrolled, setIsScrolled] = useState(false);
   const bubbleRef = useRef<HTMLDivElement>(null);
   const linksContainerRef = useRef<HTMLDivElement>(null);

@@ -396,7 +396,14 @@ retirement engine and a generalised flow. Both studies open on a laptop
 drawn in CSS, waiting for screenshots. RMAP was cut back to an overview at
 Dylan's request, since it is a company's system.
 
-Still to do: screenshots, and one or two more case studies.
+The laptops now carry real screenshots, light and dark.
+
+`/design` and `/media` are built for the visual work, reached from the
+Design and Media hobby tiles. They stay unpublished until their content
+files have images: posters, photoshoots and apparel from the EEE Club
+publications role first. This replaces the Craft section idea in §3.
+
+Still to do: fill the galleries, and one or two more case studies.
 
 **Phase 4 — The rest.** Craft gallery, Security terminal, Toolbelt bento, Hobbies
 port, Contact with a working backend, Colophon.
