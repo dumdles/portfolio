@@ -22,7 +22,19 @@ function HobbyTile({ hobby, index }: { hobby: Hobby; index: number }) {
       <TiltCard maxTilt={6} className="flex h-full min-h-48 flex-col justify-between p-5 sm:p-6" glare={false}>
         {/* Photograph, rastered in on hover. Decorative: the title names it. */}
         <div aria-hidden className="photo-wipe pointer-events-none absolute inset-0">
-          <Image src={hobby.image} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover" />
+          {/* Eager but low priority: every photo is fetched soon after the page
+              settles, so the first hover has something to show. The blurred
+              placeholder covers the gap on a slow connection. */}
+          <Image
+            src={hobby.image}
+            alt=""
+            fill
+            placeholder="blur"
+            loading="eager"
+            fetchPriority="low"
+            sizes={hobby.size === "md" ? "(max-width: 640px) 100vw, 50vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"}
+            className="object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/55 to-surface/0" />
         </div>
 
@@ -40,17 +52,11 @@ function HobbyTile({ hobby, index }: { hobby: Hobby; index: number }) {
 
       {/* Outside the tilting card so its pixels stay on the screen grid. A
           tilting card is flattened to a bitmap and warped in 3D, which
-          smears pixel art into soft blobs. */}
-      <PixelGlyph
-        name={hobby.glyph}
-        px={5}
-        accent={hobby.accent}
-        hover={hobby.motion}
-        assemble="view"
-        delay={160 + index * 60}
-        step={12}
-        className="pointer-events-none absolute left-5 top-5 z-10 text-ink sm:left-6 sm:top-6"
-      />
+          smears pixel art into soft blobs. TiltCard moves it with the card
+          in whole pixels instead. */}
+      <span data-tilt-follow className="pointer-events-none absolute left-5 top-5 z-10 flex sm:left-6 sm:top-6">
+        <PixelGlyph name={hobby.glyph} px={5} accent={hobby.accent} hover={hobby.motion} assemble="view" delay={160 + index * 60} step={12} className="text-ink" />
+      </span>
     </BentoItem>
   );
 }

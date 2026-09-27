@@ -87,7 +87,8 @@ src/
     projects.ts            the works index
     timeline.ts            education, work and service, with what
                            happened at each school
-    hobbies.ts             the off-the-clock cards
+    hobbies.ts             the off-the-clock cards; imports its photos
+                           from public/images for their blur placeholders
     case-studies/          one file per case study, plus the shared types
   hooks/
     use-reduced-motion.ts
@@ -293,13 +294,22 @@ not to hand-roll this again:
 4. Keyboard focus inside the card produces a visible lift, so the card is not
    inert to anyone not using a mouse.
 
+The tilt shrinks as the card grows: the angle is scaled by 320px over the
+card's longer side, down to a third of `maxTilt`. The same angle swings the
+edge of a wide card much further than a small one, and on the large works
+tiles it read as seasick.
+
 **Never put a pixel glyph inside a `TiltCard`.** While the card tilts, the
 browser draws it to a bitmap and resamples that bitmap every frame, the same
 as any 3D-transformed layer. Pixel art does not survive resampling: a works
 tile watermark went from 3 colours at rest to about 1,860 mid-tilt. Render
 the glyph as an absolutely positioned sibling of the card inside the
-`BentoItem`, and hold its space inside the card with a spacer if the layout
-needs it. `works-section.tsx` and `hobbies-section.tsx` show the pattern.
+`BentoItem`, wrapped in an element with `data-tilt-follow`. Each frame,
+`TiltCard` reads its own live transform, works out where it puts the
+follower's centre, and moves the follower there in whole pixels, so the
+glyph rides along with the card and stays sharp. Hold the glyph's space
+inside the card with a spacer if the layout needs it. `works-section.tsx`
+and `hobbies-section.tsx` show the pattern.
 
 ### `BentoGrid` and `BentoItem`
 

@@ -30,20 +30,23 @@ const disciplineAccent: Record<Discipline, string> = {
  */
 function Watermark({ project }: { project: Project }) {
   const discipline = project.disciplines[0];
+  // A sibling of the card, moved with it in whole pixels (see TiltCard).
   return (
-    <PixelGlyph
-      name={discipline}
-      px={project.size === "lg" ? 6 : 4}
-      accent={disciplineAccent[discipline]}
-      hover={discipline === "break" ? "swap" : "loop"}
-      assemble="view"
-      delay={220}
-      step={12}
-      className={cn(
-        "pointer-events-none absolute bottom-4 right-4 z-10 text-ink-faint transition-opacity duration-200",
-        project.placeholder ? "opacity-35 group-hover/tile:opacity-60" : "opacity-40 group-hover/tile:opacity-90"
-      )}
-    />
+    <span data-tilt-follow className="pointer-events-none absolute bottom-4 right-4 z-10 flex">
+      <PixelGlyph
+        name={discipline}
+        px={project.size === "lg" ? 6 : 4}
+        accent={disciplineAccent[discipline]}
+        hover={discipline === "break" ? "swap" : "loop"}
+        assemble="view"
+        delay={220}
+        step={12}
+        className={cn(
+          "text-ink-faint transition-opacity duration-200",
+          project.placeholder ? "opacity-35 group-hover/tile:opacity-60" : "opacity-40 group-hover/tile:opacity-90"
+        )}
+      />
+    </span>
   );
 }
 

@@ -8,8 +8,20 @@
  * fight the rest of the sheet.
  */
 
+import type { StaticImageData } from "next/image";
 import type { BentoSize } from "@/components/primitives";
 import type { GlyphName } from "@/lib/pixel/glyphs";
+
+// Photos live in public/images. Imported rather than referenced by path so
+// Next.js knows their size and inlines a tiny blurred copy of each, shown
+// the instant a card is hovered while the full photo loads. To change one,
+// replace the file (metadata stripped) or point the import at a new one.
+import communityPhoto from "../../public/images/community-hobby.jpg";
+import connectionsPhoto from "../../public/images/connections-hobby.jpg";
+import cyclingPhoto from "../../public/images/cycling-hobby.jpg";
+import designPhoto from "../../public/images/design-hobby.jpg";
+import guitarPhoto from "../../public/images/guitar-hobby.jpg";
+import mediaPhoto from "../../public/images/media-hobby.jpg";
 
 export interface Hobby {
   id: string;
@@ -20,22 +32,22 @@ export interface Hobby {
   /** How the glyph moves on hover: swap to its second frame, or loop both. */
   motion: "swap" | "loop";
   accent: string;
-  image: string;
+  image: StaticImageData;
   size: BentoSize;
 }
 
 export const hobbies: Hobby[] = [
-  { id: "design", title: "Design", glyph: "nib", motion: "loop", accent: "var(--design)", image: "/images/design-hobby.jpg", size: "sm" },
-  { id: "media", title: "Media", glyph: "camera", motion: "swap", accent: "var(--break)", image: "/images/media-hobby.jpg", size: "sm" },
-  { id: "cycling", title: "Cycling", glyph: "bike", motion: "loop", accent: "var(--positive)", image: "/images/cycling-hobby.jpg", size: "sm" },
-  { id: "guitar", title: "Guitar", glyph: "guitar", motion: "loop", accent: "var(--build)", image: "/images/guitar-hobby.jpg", size: "sm" },
+  { id: "design", title: "Design", glyph: "nib", motion: "loop", accent: "var(--design)", image: designPhoto, size: "sm" },
+  { id: "media", title: "Media", glyph: "camera", motion: "swap", accent: "var(--break)", image: mediaPhoto, size: "sm" },
+  { id: "cycling", title: "Cycling", glyph: "bike", motion: "loop", accent: "var(--positive)", image: cyclingPhoto, size: "sm" },
+  { id: "guitar", title: "Guitar", glyph: "guitar", motion: "loop", accent: "var(--build)", image: guitarPhoto, size: "sm" },
   {
     id: "connections",
     title: "Making new connections",
     glyph: "network",
     motion: "loop",
     accent: "var(--brand)",
-    image: "/images/connections-hobby.jpg",
+    image: connectionsPhoto,
     size: "md",
   },
   {
@@ -44,7 +56,7 @@ export const hobbies: Hobby[] = [
     glyph: "heart",
     motion: "loop",
     accent: "var(--critical)",
-    image: "/images/community-hobby.jpg",
+    image: communityPhoto,
     size: "md",
   },
 ];
