@@ -23,6 +23,7 @@
  */
 
 import type { Gallery } from "./types";
+import eeeShirtWhite from "../../../public/images/gallery/eee-shirt-white.jpg";
 
 export const design: Gallery = {
   slug: "design",
