@@ -30,6 +30,10 @@ export const finvue: CaseStudy = {
     { label: "Size", value: "255 commits, 223 test files" },
     { label: "Status", value: "Live" },
   ],
+  screenshot: {
+    src: "/images/projects/finvue-screenshot.png",
+    alt: "Finvue app screenshot, app dashboard showing net worth.",
+  },
   live: { label: "finvue.xyz", href: "https://finvue.xyz" },
   sections: [
     {

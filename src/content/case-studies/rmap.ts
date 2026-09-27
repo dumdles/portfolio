@@ -29,6 +29,10 @@ export const rmap: CaseStudy = {
     { label: "Stack", value: "Next.js 14, PHP, Flutter, MySQL, AWS" },
     { label: "Status", value: "In production, about 20 daily users" },
   ],
+  screenshot: {
+    src: "/images/projects/rmap-screenshot.png",
+    alt: "RMAP portal screenshot, showing portal dashboard with a list of reports and their status.",    
+  },
   sections: [
     {
       kind: "prose",
