@@ -9,17 +9,19 @@ import { profile } from "@/content/profile";
  * The footer, drawn as the sheet's title strip: the site's name set in its
  * own pixel face at full width, then the colophon.
  *
- * The colophon lists the typefaces, the stack, and the commit that is
- * deployed.
+ * The colophon lists the typefaces, the stack, when the site last changed
+ * and the commit that is deployed.
  */
 
 const commit = (process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? "").slice(0, 7) || "local";
+// Set in next.config.ts from the latest commit's date.
+const updated = process.env.NEXT_PUBLIC_LAST_UPDATED ?? "";
 
 const colophon = [
   { label: "Set in", value: "Space Grotesk, Inter, JetBrains Mono, and a 5×7 face drawn for this site" },
   { label: "Built with", value: "Next.js, TypeScript, Tailwind CSS" },
   { label: "Made in", value: "Singapore" },
-  { label: "Revision", value: commit },
+  { label: "Last updated", value: updated ? `${updated} · ${commit}` : commit },
 ];
 
 const links = [
