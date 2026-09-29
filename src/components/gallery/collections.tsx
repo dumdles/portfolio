@@ -2,10 +2,14 @@
 
 import * as React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { DraftingSheet, Reveal, SectionHeader, TechnicalLabel, TitleBlock, stagger } from "@/components/primitives";
 import { cn } from "@/lib/utils";
 import { collectionImages, type Collection, type GalleryImage, type Garment, type GarmentView } from "@/content/galleries/types";
+import type { TagId } from "@/content/tags";
 import { useLightbox } from "./lightbox";
+import { RingCarousel } from "./ring-carousel";
+import { TagList } from "./tag-list";
 
 /**
  * One collection of work, drawn in the layout its content asks for. Every
@@ -97,7 +101,13 @@ function View({ label, view, onOpen }: { label: string; view: GarmentView; onOpe
   return (
     <figure className="flex flex-col gap-2">
       <TechnicalLabel>{label}</TechnicalLabel>
-      <button type="button" onClick={onOpen} aria-label={`Open ${label.toLowerCase()} view`} className="drafting-grid-fine relative aspect-square overflow-hidden rounded-md border border-rule bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
+      <button
+        type="button"
+        onClick={onOpen}
+        aria-label={`Open ${label.toLowerCase()} view`}
+        style={view.backdrop ? { background: view.backdrop } : undefined}
+        className={cn("relative aspect-square overflow-hidden rounded-md border border-rule focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand", !view.backdrop && "drafting-grid-fine bg-surface")}
+      >
         <Image src={view.image} alt={view.alt} fill sizes="(max-width: 1024px) 45vw, 360px" placeholder="blur" draggable={false} className="object-contain p-4" />
         {view.callouts?.map((c) => (
           <span key={c.label} aria-hidden className="absolute flex items-center gap-1.5" style={{ left: `${c.x}%`, top: `${c.y}%` }}>
@@ -112,7 +122,7 @@ function View({ label, view, onOpen }: { label: string; view: GarmentView; onOpe
   );
 }
 
-function Apparel({ garments, open }: { garments: Garment[]; open: (i: number) => void }) {
+function Apparel({ garments, tags, open }: { garments: Garment[]; tags?: TagId[]; open: (i: number) => void }) {
   // Lightbox order matches collectionImages(): front, back, photo, per garment.
   let cursor = 0;
   return (
@@ -120,14 +130,20 @@ function Apparel({ garments, open }: { garments: Garment[]; open: (i: number) =>
       {garments.map((g) => {
         const front = g.front ? cursor++ : -1;
         const back = g.back ? cursor++ : -1;
+        const print = g.print ? cursor++ : -1;
+        const views = [g.front, g.back, g.print].filter(Boolean).length;
         const photo = g.photo ? cursor++ : -1;
         return (
           <Reveal key={g.id} className="grid gap-6 lg:grid-cols-[2fr_1fr]">
             <div data-reveal className="flex flex-col gap-4">
-              <h3 className="font-display text-heading font-semibold text-ink">{g.name}</h3>
-              <div className={cn("grid gap-3 sm:gap-4", g.front && g.back ? "grid-cols-2" : "max-w-lg")}>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <h3 className="font-display text-heading font-semibold text-ink">{g.name}</h3>
+                <TagList tags={[...new Set([...(tags ?? []), ...(g.tags ?? [])])]} />
+              </div>
+              <div className={cn("grid gap-3 sm:gap-4", views > 1 ? "grid-cols-2" : "max-w-lg")}>
                 {g.front && <View label="Front" view={g.front} onOpen={() => open(front)} />}
                 {g.back && <View label="Back" view={g.back} onOpen={() => open(back)} />}
+                {g.print && <View label="Print artwork" view={g.print} onOpen={() => open(print)} />}
               </div>
             </div>
             <div data-reveal style={stagger(1)} className="flex flex-col gap-4 lg:pt-11">
@@ -161,7 +177,7 @@ function Grid({ items, open }: { items: GalleryImage[]; open: (i: number) => voi
 
 /* -------------------------------------------------------------------------- */
 
-export function CollectionView({ collection, part }: { collection: Collection; part: string }) {
+export function CollectionView({ collection, part, source }: { collection: Collection; part: string; source?: { href: string; label: string } }) {
   const images = React.useMemo(() => collectionImages(collection), [collection]);
   const lightbox = useLightbox(images);
   if (images.length === 0) return null;
@@ -171,12 +187,22 @@ export function CollectionView({ collection, part }: { collection: Collection; p
   return (
     <DraftingSheet id={collection.id} grid="none" className="border-t border-rule">
       <SectionHeader part={part} eyebrow={collection.context ?? collection.title} title={collection.title} lead={collection.summary} className="mb-4" />
-      {meta && <p className="mb-10 font-mono text-label uppercase text-ink-muted">{meta}</p>}
-      {!meta && <div className="mb-6" />}
+      {(meta || source) && (
+        <p className="mb-10 flex flex-wrap gap-x-4 gap-y-1 font-mono text-label uppercase text-ink-muted">
+          {meta && <span>{meta}</span>}
+          {source && (
+            <Link href={source.href} className="text-brand underline-offset-4 hover:underline">
+              {source.label} ↗
+            </Link>
+          )}
+        </p>
+      )}
+      {!meta && !source && <div className="mb-6" />}
 
+      {collection.layout === "carousel" && <RingCarousel items={images} label={collection.title} open={lightbox.open} />}
       {collection.layout === "posters" && <Posters items={collection.items} open={lightbox.open} />}
       {collection.layout === "contact-sheet" && <ContactSheet selects={collection.selects} items={collection.items} open={lightbox.open} />}
-      {collection.layout === "apparel" && <Apparel garments={collection.garments} open={lightbox.open} />}
+      {collection.layout === "apparel" && <Apparel garments={collection.garments} tags={collection.tags} open={lightbox.open} />}
       {collection.layout === "grid" && <Grid items={collection.items} open={lightbox.open} />}
 
       {lightbox.element}

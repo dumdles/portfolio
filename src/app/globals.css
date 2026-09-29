@@ -910,6 +910,86 @@ html[data-js] .laptop[data-inview] .laptop-screen > :not(.laptop-notch) {
     var(--device-bezel);
 }
 
+/* --- Ring carousel -----------------------------------------------------------
+
+   Posters on a ring. Each card is turned to its slot and pushed out by the
+   radius; the ring is pulled back by the same radius and turned the other
+   way. The card at the front ends up with no net transform, so it is drawn
+   at 1:1. The radius is whatever places the cards edge to edge: half a card
+   over tan(half the slot angle), plus a gap. */
+/* Square cards: most posters are Instagram squares. Each design is shown
+   whole on the card, so stories, A-size posters and wide banners keep
+   their shape. */
+.ring-carousel {
+  --w: clamp(220px, 62vw, 380px);
+  --h: var(--w);
+  --r: calc(var(--w) / 2 / tan(180deg / var(--slots)) + 28px);
+}
+
+.ring-stage {
+  position: relative;
+  height: calc(var(--h) + 56px);
+  perspective: 1800px;
+  perspective-origin: 50% 40%;
+  overflow-x: clip;
+  touch-action: pan-y;
+}
+
+/* A zero-size point at the top centre of the stage. A full-size box here
+   is pushed back by the radius and some renderers draw its edge. */
+.ring {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  transform: translateZ(calc(var(--r) * -1)) rotateY(calc(var(--turn) * -360deg / var(--slots)));
+  transition: transform 720ms var(--ease-out-expo);
+}
+
+.ring-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--w);
+  height: var(--h);
+  margin-left: calc(var(--w) / -2);
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  transform: rotateY(calc(var(--i) * 360deg / var(--slots))) translateZ(var(--r));
+  /* No backface-visibility: cards turned away are hidden by the component,
+     and Chromium culled a visible side card with it set on narrow screens. */
+  cursor: pointer;
+  transition:
+    opacity var(--dur-base) var(--ease-out-expo),
+    box-shadow var(--dur-base) var(--ease-out-expo);
+}
+
+.ring-card.is-front {
+  box-shadow: var(--shadow-pane);
+  cursor: zoom-in;
+}
+
+.ring-card:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+}
+
+.ring-track {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  width: min(100%, calc(var(--w) * 2.8));
+  height: 44px;
+  translate: -50% 0;
+  border: 1px dashed var(--rule-strong);
+  border-radius: 50%;
+}
+
 /* --- Small recurring pieces ---------------------------------------------- */
 
 /* A live marker's ring pulses three times when first seen, then rests. */

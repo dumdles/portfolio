@@ -62,6 +62,7 @@ src/
     page.tsx               the spine: which sections, in what order
     projects/[slug]/       case study pages, one per file in content/case-studies
     design/, media/        gallery pages, unpublished until they have work
+    tags/[tag]/            one page per tag in use
     styleguide/page.tsx    the rendered reference
   components/
     primitives/            the design system
@@ -93,6 +94,7 @@ src/
                            from public/images for their blur placeholders
     case-studies/          one file per case study, plus the shared types
     galleries/             design.ts and media.ts, the /design and /media pages
+    tags.ts                every tag, by organisation and by type
   hooks/
     use-reduced-motion.ts
     use-in-view.ts
@@ -636,13 +638,18 @@ a layout:
 
 | Layout | For |
 |---|---|
+| `carousel` | Instagram posters on a 3D ring, one large at the front with its title, date, `description` and tags underneath. |
 | `posters` | Instagram posts and posters, cropped to 4:5 frames. |
 | `contact-sheet` | A photoshoot: `selects` set large, then every frame on a strip of film, numbered. The strip is dark in both themes. |
-| `apparel` | Shirts and jackets: front and back on a fine grid, optional callouts pinned by percentage, a spec title block and a photo of the finished piece. |
+| `apparel` | Shirts and jackets: front, back or the print artwork on its own, on a fine grid (or a `backdrop` colour, for white ink), optional callouts pinned by percentage, a spec title block and a photo of the finished piece. |
 | `grid` | Anything else, in columns that keep each image's own shape. |
 
 Images are static imports from `public/images/gallery/`, for their sizes
-and blurred placeholders. Every image opens in a lightbox that steps through
+and blurred placeholders. Before one goes in: strip its metadata, cover any
+phone numbers or other personal details (other people's especially), and
+scale it to 2400px on the long side. Photo-heavy designs are smaller as
+JPEG. The carousel's cards are square and show each design whole, so a
+story, an A-size poster and a wide banner all keep their shape. Every image opens in a lightbox that steps through
 its collection with the arrow keys, closes on Esc, keeps focus inside, and
 hands focus back to the frame that opened it. It renders into
 `document.body`; inside a section it would sit under the navbar.
@@ -650,6 +657,38 @@ hands focus back to the frame that opened it. It renders into
 A gallery with no images is unpublished: its route 404s and the Design or
 Media hobby tile stays a plain card. Once it has work, the tile becomes a
 link to it.
+
+### The ring carousel
+
+Each poster is turned to its slot and pushed out by the ring's radius; the
+ring is a zero-size point pulled back by the same radius and turned the
+other way. The poster at the front therefore has no net transform and is
+drawn at 1:1, sharp. The radius comes from CSS trigonometry: half a card
+over `tan(180deg / slots)`, plus a gap.
+
+- Five or more posters wrap around. Fewer sit on an arc of an eight-slot
+  ring and the ends stop, so it never turns through empty slots.
+- Arrows, the arrow keys, a swipe or a click on a side poster turn it. A
+  click on the front poster opens the lightbox. It never turns on its own.
+- Posters more than two slots from the front are hidden.
+- Two things that looked right and were not: a full-size ring box is drawn
+  as an outline by some renderers at 2x, so the ring is a point; and lazy
+  loading judges a card by its untransformed box, so ring images load
+  eagerly.
+
+### Tags
+
+Tags live in `src/content/tags.ts`, by organisation (EEEC) and by type
+(Poster, Apparel, Photography, Video). A tag must be registered there before
+use; anything else is a type error. They go on a collection (applying to
+everything in it), a garment, or a single image, and merge downward.
+
+Each tag with published work gets a page at `/tags/<id>` listing
+everything under it, grouped by the collection it came from, each group
+linking back to its gallery. Tags show as chips under the carousel, beside
+each garment and in the lightbox. A tag with no published work has no page
+and no chip links to it. Case studies and the leadership section can join
+later by contributing to `worksTagged()` in `content/galleries/index.ts`.
 
 ---
 

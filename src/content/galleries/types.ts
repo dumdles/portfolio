@@ -12,6 +12,7 @@
  */
 
 import type { StaticImageData } from "next/image";
+import type { TagId } from "@/content/tags";
 
 export interface GalleryImage {
   src: StaticImageData;
@@ -23,6 +24,10 @@ export interface GalleryImage {
   date?: string;
   /** One line, shown under the image in the lightbox. */
   caption?: string;
+  /** What the piece was for, in a sentence or two. Shown under the carousel. */
+  description?: string;
+  /** Tags for this piece alone. The collection's tags are added to them. */
+  tags?: TagId[];
 }
 
 /** A label pinned to a point on a garment, as a percentage of the image. */
@@ -36,18 +41,27 @@ export interface GarmentView {
   image: StaticImageData;
   alt: string;
   callouts?: Callout[];
+  /**
+   * A colour to show the view on, for artwork printed in white ink that
+   * would vanish on the light grid. Ideally the garment's own colour.
+   */
+  backdrop?: string;
 }
 
 export interface Garment {
   id: string;
   name: string;
-  /** Give at least one of front and back. */
+  /** Give at least one of front, back and print. */
   front?: GarmentView;
   back?: GarmentView;
+  /** The print artwork on its own, as sent to the printer. */
+  print?: GarmentView;
   /** The finished piece, worn or laid out. */
   photo?: GalleryImage;
   /** Title block fields: garment type, colour, print method, quantity, year. */
   specs?: { label: string; value: string }[];
+  /** Tags for this garment alone. The collection's tags are added to them. */
+  tags?: TagId[];
 }
 
 interface CollectionBase {
@@ -60,9 +74,13 @@ interface CollectionBase {
   period?: string;
   /** A sentence or two on the brief and what came of it. */
   summary?: string;
+  /** Tags for everything in the collection. */
+  tags?: TagId[];
 }
 
 export type Collection =
+  /** Instagram posts and posters on a rotating 3D ring, one large at a time with its description. */
+  | (CollectionBase & { layout: "carousel"; items: GalleryImage[] })
   /** Instagram posts and posters, in 4:5 frames. */
   | (CollectionBase & { layout: "posters"; items: GalleryImage[] })
   /** A photoshoot: selects set large, then the rest as a contact sheet. */
@@ -79,19 +97,30 @@ export interface Gallery {
   collections: Collection[];
 }
 
-/** Every image in a collection, in the order the lightbox steps through them. */
+/** Tags from every level, deduplicated, collection first. */
+function mergeTags(...lists: (TagId[] | undefined)[]): TagId[] {
+  return [...new Set(lists.flatMap((list) => list ?? []))];
+}
+
+/**
+ * Every image in a collection, in the order the lightbox steps through them,
+ * each carrying its full set of tags: the collection's, plus its own (or
+ * its garment's).
+ */
 export function collectionImages(collection: Collection): GalleryImage[] {
+  const withTags = (image: GalleryImage, ...extra: (TagId[] | undefined)[]) => ({ ...image, tags: mergeTags(collection.tags, ...extra, image.tags) });
   switch (collection.layout) {
     case "contact-sheet":
-      return [...(collection.selects ?? []), ...collection.items];
+      return [...(collection.selects ?? []), ...collection.items].map((image) => withTags(image));
     case "apparel":
       return collection.garments.flatMap((g) => [
-        ...(g.front ? [{ src: g.front.image, alt: g.front.alt, title: g.name, caption: "Front" }] : []),
-        ...(g.back ? [{ src: g.back.image, alt: g.back.alt, title: g.name, caption: "Back" }] : []),
-        ...(g.photo ? [g.photo] : []),
+        ...(g.front ? [withTags({ src: g.front.image, alt: g.front.alt, title: g.name, caption: "Front" }, g.tags)] : []),
+        ...(g.back ? [withTags({ src: g.back.image, alt: g.back.alt, title: g.name, caption: "Back" }, g.tags)] : []),
+        ...(g.print ? [withTags({ src: g.print.image, alt: g.print.alt, title: g.name, caption: "Print artwork" }, g.tags)] : []),
+        ...(g.photo ? [withTags(g.photo, g.tags)] : []),
       ]);
     default:
-      return collection.items;
+      return collection.items.map((image) => withTags(image));
   }
 }
 
