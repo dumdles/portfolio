@@ -11,6 +11,7 @@
 export const tags = {
   // Organisations
   eeec: { label: "EEEC", kind: "org", name: "Electrical and Electronic Engineering Club, Singapore Polytechnic" },
+  sst: { label: "SST", kind: "org", name: "School of Science and Technology, Singapore" },
 
   // Types of work
   poster: { label: "Poster", kind: "type" },

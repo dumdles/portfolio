@@ -41,14 +41,21 @@ export interface GarmentView {
   image: StaticImageData;
   alt: string;
   callouts?: Callout[];
+  /**
+   * A colour to show the view on, for artwork printed in white ink that
+   * would vanish on the light grid. Ideally the garment's own colour.
+   */
+  backdrop?: string;
 }
 
 export interface Garment {
   id: string;
   name: string;
-  /** Give at least one of front and back. */
+  /** Give at least one of front, back and print. */
   front?: GarmentView;
   back?: GarmentView;
+  /** The print artwork on its own, as sent to the printer. */
+  print?: GarmentView;
   /** The finished piece, worn or laid out. */
   photo?: GalleryImage;
   /** Title block fields: garment type, colour, print method, quantity, year. */
@@ -109,6 +116,7 @@ export function collectionImages(collection: Collection): GalleryImage[] {
       return collection.garments.flatMap((g) => [
         ...(g.front ? [withTags({ src: g.front.image, alt: g.front.alt, title: g.name, caption: "Front" }, g.tags)] : []),
         ...(g.back ? [withTags({ src: g.back.image, alt: g.back.alt, title: g.name, caption: "Back" }, g.tags)] : []),
+        ...(g.print ? [withTags({ src: g.print.image, alt: g.print.alt, title: g.name, caption: "Print artwork" }, g.tags)] : []),
         ...(g.photo ? [withTags(g.photo, g.tags)] : []),
       ]);
     default:

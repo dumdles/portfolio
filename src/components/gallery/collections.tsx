@@ -101,7 +101,13 @@ function View({ label, view, onOpen }: { label: string; view: GarmentView; onOpe
   return (
     <figure className="flex flex-col gap-2">
       <TechnicalLabel>{label}</TechnicalLabel>
-      <button type="button" onClick={onOpen} aria-label={`Open ${label.toLowerCase()} view`} className="drafting-grid-fine relative aspect-square overflow-hidden rounded-md border border-rule bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
+      <button
+        type="button"
+        onClick={onOpen}
+        aria-label={`Open ${label.toLowerCase()} view`}
+        style={view.backdrop ? { background: view.backdrop } : undefined}
+        className={cn("relative aspect-square overflow-hidden rounded-md border border-rule focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand", !view.backdrop && "drafting-grid-fine bg-surface")}
+      >
         <Image src={view.image} alt={view.alt} fill sizes="(max-width: 1024px) 45vw, 360px" placeholder="blur" draggable={false} className="object-contain p-4" />
         {view.callouts?.map((c) => (
           <span key={c.label} aria-hidden className="absolute flex items-center gap-1.5" style={{ left: `${c.x}%`, top: `${c.y}%` }}>
@@ -124,6 +130,8 @@ function Apparel({ garments, tags, open }: { garments: Garment[]; tags?: TagId[]
       {garments.map((g) => {
         const front = g.front ? cursor++ : -1;
         const back = g.back ? cursor++ : -1;
+        const print = g.print ? cursor++ : -1;
+        const views = [g.front, g.back, g.print].filter(Boolean).length;
         const photo = g.photo ? cursor++ : -1;
         return (
           <Reveal key={g.id} className="grid gap-6 lg:grid-cols-[2fr_1fr]">
@@ -132,9 +140,10 @@ function Apparel({ garments, tags, open }: { garments: Garment[]; tags?: TagId[]
                 <h3 className="font-display text-heading font-semibold text-ink">{g.name}</h3>
                 <TagList tags={[...new Set([...(tags ?? []), ...(g.tags ?? [])])]} />
               </div>
-              <div className={cn("grid gap-3 sm:gap-4", g.front && g.back ? "grid-cols-2" : "max-w-lg")}>
+              <div className={cn("grid gap-3 sm:gap-4", views > 1 ? "grid-cols-2" : "max-w-lg")}>
                 {g.front && <View label="Front" view={g.front} onOpen={() => open(front)} />}
                 {g.back && <View label="Back" view={g.back} onOpen={() => open(back)} />}
+                {g.print && <View label="Print artwork" view={g.print} onOpen={() => open(print)} />}
               </div>
             </div>
             <div data-reveal style={stagger(1)} className="flex flex-col gap-4 lg:pt-11">

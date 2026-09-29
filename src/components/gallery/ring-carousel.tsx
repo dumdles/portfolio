@@ -130,7 +130,7 @@ export function RingCarousel({ items, label, open }: { items: GalleryImage[]; la
               >
                 {/* Eager: lazy loading judges a card by its untransformed box, so a
                     poster turned to the side could stay unloaded while in view. */}
-                <Image src={item.src} alt={front ? item.alt : ""} fill loading="eager" sizes="(max-width: 640px) 62vw, 360px" placeholder="blur" draggable={false} className="object-cover" />
+                <Image src={item.src} alt={front ? item.alt : ""} fill loading="eager" sizes="(max-width: 640px) 62vw, 380px" placeholder="blur" draggable={false} className="object-contain p-2" />
               </button>
             );
           })}

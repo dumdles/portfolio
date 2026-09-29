@@ -641,11 +641,15 @@ a layout:
 | `carousel` | Instagram posters on a 3D ring, one large at the front with its title, date, `description` and tags underneath. |
 | `posters` | Instagram posts and posters, cropped to 4:5 frames. |
 | `contact-sheet` | A photoshoot: `selects` set large, then every frame on a strip of film, numbered. The strip is dark in both themes. |
-| `apparel` | Shirts and jackets: front and back on a fine grid, optional callouts pinned by percentage, a spec title block and a photo of the finished piece. |
+| `apparel` | Shirts and jackets: front, back or the print artwork on its own, on a fine grid (or a `backdrop` colour, for white ink), optional callouts pinned by percentage, a spec title block and a photo of the finished piece. |
 | `grid` | Anything else, in columns that keep each image's own shape. |
 
 Images are static imports from `public/images/gallery/`, for their sizes
-and blurred placeholders. Every image opens in a lightbox that steps through
+and blurred placeholders. Before one goes in: strip its metadata, cover any
+phone numbers or other personal details (other people's especially), and
+scale it to 2400px on the long side. Photo-heavy designs are smaller as
+JPEG. The carousel's cards are square and show each design whole, so a
+story, an A-size poster and a wide banner all keep their shape. Every image opens in a lightbox that steps through
 its collection with the arrow keys, closes on Esc, keeps focus inside, and
 hands focus back to the frame that opened it. It renders into
 `document.body`; inside a section it would sit under the navbar.

@@ -917,9 +917,12 @@ html[data-js] .laptop[data-inview] .laptop-screen > :not(.laptop-notch) {
    way. The card at the front ends up with no net transform, so it is drawn
    at 1:1. The radius is whatever places the cards edge to edge: half a card
    over tan(half the slot angle), plus a gap. */
+/* Square cards: most posters are Instagram squares. Each design is shown
+   whole on the card, so stories, A-size posters and wide banners keep
+   their shape. */
 .ring-carousel {
-  --w: clamp(200px, 58vw, 340px);
-  --h: calc(var(--w) * 1.25);
+  --w: clamp(220px, 62vw, 380px);
+  --h: var(--w);
   --r: calc(var(--w) / 2 / tan(180deg / var(--slots)) + 28px);
 }
 
@@ -955,7 +958,7 @@ html[data-js] .laptop[data-inview] .laptop-screen > :not(.laptop-notch) {
   overflow: hidden;
   border: 1px solid var(--rule);
   border-radius: 8px;
-  background: var(--surface-sunken);
+  background: var(--surface);
   box-shadow: var(--shadow-card);
   transform: rotateY(calc(var(--i) * 360deg / var(--slots))) translateZ(var(--r));
   /* No backface-visibility: cards turned away are hidden by the component,
