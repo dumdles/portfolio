@@ -403,6 +403,13 @@ Design and Media hobby tiles. They stay unpublished until their content
 files have images: posters, photoshoots and apparel from the EEE Club
 publications role first. This replaces the Craft section idea in §3.
 
+Posters get a 3D ring carousel with a description under each, and all
+gallery work carries tags with a page per tag (`/tags/eeec`).
+
+Next: a leadership section, led by Publications Secretary of the EEE Club.
+It will show the EEEC design work through its tag, with more on the role
+itself and Dylan's own photos and videos.
+
 Still to do: fill the galleries, and one or two more case studies.
 
 **Phase 4 — The rest.** Craft gallery, Security terminal, Toolbelt bento, Hobbies

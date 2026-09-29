@@ -37,6 +37,7 @@ export const design: Gallery = {
       context: "EEE Club, Singapore Polytechnic",
       role: "Publications secretary",
       period: "2023–2024",
+      tags: ["eeec", "apparel"],
       garments: [
         {
           id: "eee-tee-ay2324",

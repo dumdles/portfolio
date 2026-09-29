@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { TechnicalLabel } from "@/components/primitives";
+import { TagList } from "./tag-list";
 import type { GalleryImage } from "@/content/galleries/types";
 
 /**
@@ -12,7 +13,7 @@ import type { GalleryImage } from "@/content/galleries/types";
  *
  * Esc closes it, the arrow keys step through the collection, and focus goes
  * back to the frame that opened it. The page behind does not scroll while
- * it is open. Focus stays inside: Tab cycles through its three buttons.
+ * it is open. Focus stays inside: Tab cycles through its buttons and tag links.
  *
  * It renders into document.body. Inside a section it would share that
  * section's stacking context and sit under the navbar.
@@ -42,7 +43,7 @@ export function Lightbox({ images, index, onClose, onStep }: { images: GalleryIm
       else if (event.key === "ArrowRight" && count > 1) step(1);
       else if (event.key === "ArrowLeft" && count > 1) step(-1);
       else if (event.key === "Tab") {
-        const buttons = dialogRef.current?.querySelectorAll<HTMLButtonElement>("button");
+        const buttons = dialogRef.current?.querySelectorAll<HTMLElement>("button, a[href]");
         if (!buttons?.length) return;
         const first = buttons[0];
         const last = buttons[buttons.length - 1];
@@ -104,6 +105,8 @@ export function Lightbox({ images, index, onClose, onStep }: { images: GalleryIm
           </p>
         )}
         {image.caption && <p className="text-caption text-pretty text-ink-muted">{image.caption}</p>}
+        {image.description && <p className="max-w-prose text-caption text-pretty text-ink-muted">{image.description}</p>}
+        <TagList tags={image.tags} className="mt-1 justify-center" />
       </div>
     </div>,
     document.body

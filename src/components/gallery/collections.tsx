@@ -2,10 +2,14 @@
 
 import * as React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { DraftingSheet, Reveal, SectionHeader, TechnicalLabel, TitleBlock, stagger } from "@/components/primitives";
 import { cn } from "@/lib/utils";
 import { collectionImages, type Collection, type GalleryImage, type Garment, type GarmentView } from "@/content/galleries/types";
+import type { TagId } from "@/content/tags";
 import { useLightbox } from "./lightbox";
+import { RingCarousel } from "./ring-carousel";
+import { TagList } from "./tag-list";
 
 /**
  * One collection of work, drawn in the layout its content asks for. Every
@@ -112,7 +116,7 @@ function View({ label, view, onOpen }: { label: string; view: GarmentView; onOpe
   );
 }
 
-function Apparel({ garments, open }: { garments: Garment[]; open: (i: number) => void }) {
+function Apparel({ garments, tags, open }: { garments: Garment[]; tags?: TagId[]; open: (i: number) => void }) {
   // Lightbox order matches collectionImages(): front, back, photo, per garment.
   let cursor = 0;
   return (
@@ -124,7 +128,10 @@ function Apparel({ garments, open }: { garments: Garment[]; open: (i: number) =>
         return (
           <Reveal key={g.id} className="grid gap-6 lg:grid-cols-[2fr_1fr]">
             <div data-reveal className="flex flex-col gap-4">
-              <h3 className="font-display text-heading font-semibold text-ink">{g.name}</h3>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <h3 className="font-display text-heading font-semibold text-ink">{g.name}</h3>
+                <TagList tags={[...new Set([...(tags ?? []), ...(g.tags ?? [])])]} />
+              </div>
               <div className={cn("grid gap-3 sm:gap-4", g.front && g.back ? "grid-cols-2" : "max-w-lg")}>
                 {g.front && <View label="Front" view={g.front} onOpen={() => open(front)} />}
                 {g.back && <View label="Back" view={g.back} onOpen={() => open(back)} />}
@@ -161,7 +168,7 @@ function Grid({ items, open }: { items: GalleryImage[]; open: (i: number) => voi
 
 /* -------------------------------------------------------------------------- */
 
-export function CollectionView({ collection, part }: { collection: Collection; part: string }) {
+export function CollectionView({ collection, part, source }: { collection: Collection; part: string; source?: { href: string; label: string } }) {
   const images = React.useMemo(() => collectionImages(collection), [collection]);
   const lightbox = useLightbox(images);
   if (images.length === 0) return null;
@@ -171,12 +178,22 @@ export function CollectionView({ collection, part }: { collection: Collection; p
   return (
     <DraftingSheet id={collection.id} grid="none" className="border-t border-rule">
       <SectionHeader part={part} eyebrow={collection.context ?? collection.title} title={collection.title} lead={collection.summary} className="mb-4" />
-      {meta && <p className="mb-10 font-mono text-label uppercase text-ink-muted">{meta}</p>}
-      {!meta && <div className="mb-6" />}
+      {(meta || source) && (
+        <p className="mb-10 flex flex-wrap gap-x-4 gap-y-1 font-mono text-label uppercase text-ink-muted">
+          {meta && <span>{meta}</span>}
+          {source && (
+            <Link href={source.href} className="text-brand underline-offset-4 hover:underline">
+              {source.label} ↗
+            </Link>
+          )}
+        </p>
+      )}
+      {!meta && !source && <div className="mb-6" />}
 
+      {collection.layout === "carousel" && <RingCarousel items={images} label={collection.title} open={lightbox.open} />}
       {collection.layout === "posters" && <Posters items={collection.items} open={lightbox.open} />}
       {collection.layout === "contact-sheet" && <ContactSheet selects={collection.selects} items={collection.items} open={lightbox.open} />}
-      {collection.layout === "apparel" && <Apparel garments={collection.garments} open={lightbox.open} />}
+      {collection.layout === "apparel" && <Apparel garments={collection.garments} tags={collection.tags} open={lightbox.open} />}
       {collection.layout === "grid" && <Grid items={collection.items} open={lightbox.open} />}
 
       {lightbox.element}
